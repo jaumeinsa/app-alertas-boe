@@ -150,6 +150,11 @@ model Publication {
 
   ingestedAt DateTime @default(now())
 
+  // Vector de búsqueda full-text (tsvector). Lo mantiene un trigger en BD a
+  // partir de title + searchText; se consulta con índice GIN. Ver migración
+  // 0002_fulltext_search. Prisma no lo gestiona (tipo no soportado).
+  searchVector Unsupported("tsvector")?
+
   matches Match[]
 
   @@unique([sourceId, externalId])
