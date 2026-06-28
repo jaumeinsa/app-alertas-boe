@@ -93,13 +93,31 @@ async function ingestDate(date: Date) {
   }
 }
 
-async function main() {
-  const args = process.argv.slice(2).map((n) => parseInt(n, 10));
-  const from = Number.isFinite(args[0]) ? args[0] : 0;
-  const to = Number.isFinite(args[1]) ? args[1] : from;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+function parseDate(s: string): Date {
+  const d = new Date(`${s}T00:00:00.000Z`);
+  return d;
+}
+
+async function main() {
+  const raw = process.argv.slice(2);
   await ensureSources();
 
+  // Modo rango de fechas: `ingest.ts 2020-01-01 2020-12-31` (ascendente, inclusivo).
+  // Pensado para el backfill histórico.
+  if (raw[0] && DATE_RE.test(raw[0])) {
+    const start = parseDate(raw[0]);
+    const end = raw[1] && DATE_RE.test(raw[1]) ? parseDate(raw[1]) : start;
+    for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+      await ingestDate(new Date(d));
+    }
+    return;
+  }
+
+  // Modo offset de días (cron diario): `ingest.ts 0 1` = de hoy a ayer.
+  const from = Number.isFinite(parseInt(raw[0], 10)) ? parseInt(raw[0], 10) : 0;
+  const to = Number.isFinite(parseInt(raw[1], 10)) ? parseInt(raw[1], 10) : from;
   for (let n = from; n <= to; n++) {
     await ingestDate(daysAgo(n));
   }
