@@ -305,19 +305,19 @@ function Coverage({ total }: { total: number }) {
 function Pricing() {
   const plans = [
     {
-      name: "Personal", price: "9€", per: "/mes", badge: "Más popular",
-      bg: INK, fg: CREAM, border: INK, tick: TERRA,
-      btnBg: TERRA, btnFg: INK, btnBorder: TERRA, cta: "Empezar ahora",
+      name: "Personal", price: "9€", per: "/mes", note: "", badge: "",
+      bg: "#fff", fg: INK, border: "rgba(21,20,14,.12)", tick: INK,
+      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(21,20,14,.2)", cta: "Empezar mensual",
       features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email", "Escaneo del histórico reciente", "Sin permanencia"],
     },
     {
-      name: "Anual", price: "90€", per: "/año", badge: "Ahorra 18€",
-      bg: "#fff", fg: INK, border: "rgba(21,20,14,.12)", tick: INK,
-      btnBg: INK, btnFg: CREAM, btnBorder: INK, cta: "Pagar el año",
-      features: ["Todo lo del plan Personal", "Equivale a 7,50 €/mes", "Avisos por email + WhatsApp"],
+      name: "Anual", price: "4,08€", per: "/mes", note: "49 €/año en un pago · ahorras 59 €", badge: "Mejor precio",
+      bg: INK, fg: CREAM, border: INK, tick: TERRA,
+      btnBg: TERRA, btnFg: INK, btnBorder: TERRA, cta: "Empezar ahora",
+      features: ["Todo lo del plan Personal", "Avisos por email + WhatsApp", "Pago único al año", "Menos de la mitad que el mensual"],
     },
     {
-      name: "Familiar", price: "15€", per: "/mes", badge: "",
+      name: "Familiar", price: "15€", per: "/mes", note: "", badge: "",
       bg: "#fff", fg: INK, border: "rgba(21,20,14,.12)", tick: INK,
       btnBg: "transparent", btnFg: INK, btnBorder: "rgba(21,20,14,.2)", cta: "Proteger a mi familia",
       features: ["Hasta 5 nombres vigilados", "Ideal para familias y autónomos", "Avisos por email + WhatsApp", "Panel único de control"],
@@ -339,10 +339,13 @@ function Pricing() {
               <span style={{ position: "absolute", top: 22, right: 22, background: TERRA, color: INK, fontSize: 12, fontWeight: 700, fontFamily: MONO, padding: "5px 11px", borderRadius: 100 }}>{pl.badge}</span>
             )}
             <h3 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 22, letterSpacing: "-.02em", margin: "0 0 14px" }}>{pl.name}</h3>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: pl.note ? 4 : 6 }}>
               <span style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 46, letterSpacing: "-.03em" }}>{pl.price}</span>
               <span style={{ fontSize: 15, opacity: 0.6 }}>{pl.per}</span>
             </div>
+            {pl.note && (
+              <div style={{ fontSize: 13, fontWeight: 500, color: TERRA, marginBottom: 2 }}>{pl.note}</div>
+            )}
             <ul style={{ listStyle: "none", padding: 0, margin: "22px 0 28px", display: "flex", flexDirection: "column", gap: 12, fontSize: 15, flex: 1 }}>
               {pl.features.map((f) => (
                 <li key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -401,7 +404,7 @@ function FinalCta() {
           Empieza a dormir tranquilo <span style={serifAccent}>hoy.</span>
         </h2>
         <p style={{ fontSize: 18, color: "rgba(243,239,228,.66)", margin: "22px auto 32px", maxWidth: "46ch", lineHeight: 1.55 }}>
-          Activa la vigilancia y te avisamos en cuanto tu nombre aparezca en cualquier boletín oficial. Desde 9 €/mes, sin permanencia.
+          Activa la vigilancia y te avisamos en cuanto tu nombre aparezca en cualquier boletín oficial. Desde 4,08 €/mes con el plan anual.
         </p>
         <a href={PRICING} style={{ textDecoration: "none", display: "inline-block", background: TERRA, color: INK, fontWeight: 700, fontSize: 17, padding: "16px 32px", borderRadius: 100 }}>
           Empezar ahora →
