@@ -15,15 +15,15 @@ html {
 body {
   margin: 0;
   background: #F3EFE4;
-  color: #1B3160;
+  color: #22386B;
   font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
 
 ::selection {
-  background: #E8552D;
-  color: #1B3160;
+  background: #2C5BD0;
+  color: #fff;
 }
 
 /* Animaciones del diseño */

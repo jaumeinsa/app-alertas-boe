@@ -7,11 +7,16 @@ import { useEffect, useRef, useState } from "react";
  * No tiene entrada de usuario: va escaneando con nombres ficticios y muestra
  * cómo se vería un aviso. Todos los nombres y coincidencias son de ejemplo
  * (marcados como tales) — nunca son resultados reales (principio RGPD).
+ *
+ * Color: azul para el estado normal (escaneo); el coral aparece solo cuando
+ * se detecta una coincidencia, como señal de alerta real.
  */
 
-const INK = "#1B3160";
+const NAVY = "#22386B";
 const CREAM = "#F3EFE4";
-const TERRA = "#E8552D";
+const BLUE = "#2C5BD0";
+const BLUE_LT = "#9DB6F2";
+const CORAL = "#E8552D";
 const MONO = "'JetBrains Mono', monospace";
 const DISPLAY = "'Bricolage Grotesque', sans-serif";
 
@@ -96,11 +101,11 @@ export default function LiveDemo() {
     <div
       id="demo"
       style={{
-        background: INK,
+        background: NAVY,
         borderRadius: 26,
         padding: 28,
         color: CREAM,
-        boxShadow: "0 30px 70px -28px rgba(27,49,96,.5)",
+        boxShadow: "0 30px 70px -28px rgba(34,56,107,.55)",
         position: "relative",
         overflow: "hidden",
       }}
@@ -113,7 +118,7 @@ export default function LiveDemo() {
           width: 160,
           height: 160,
           borderRadius: "50%",
-          border: "1px solid rgba(232,85,45,.18)",
+          border: "1px solid rgba(157,182,242,.2)",
         }}
       />
 
@@ -121,8 +126,8 @@ export default function LiveDemo() {
         <span style={{ fontFamily: MONO, fontSize: 12, letterSpacing: ".02em", color: "rgba(243,239,228,.55)" }}>
           demo · vigilancia en vivo
         </span>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: MONO, fontSize: 12, color: TERRA }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: TERRA, animation: "nk-blink 1.4s infinite" }} />
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: MONO, fontSize: 12, color: BLUE_LT }}>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: BLUE_LT, animation: "nk-blink 1.4s infinite" }} />
           69 fuentes en línea
         </span>
       </div>
@@ -143,49 +148,49 @@ export default function LiveDemo() {
           gap: 10,
         }}
       >
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: TERRA, flexShrink: 0 }} />
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: BLUE_LT, flexShrink: 0 }} />
         {name}
       </div>
 
       <div style={{ marginTop: 20, minHeight: 172 }}>
         {phase === "scanning" && (
-          <div style={{ border: "1px solid rgba(232,85,45,.25)", borderRadius: 16, padding: 20 }}>
+          <div style={{ border: "1px solid rgba(44,91,208,.4)", borderRadius: 16, padding: 20 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: MONO, fontSize: 12, marginBottom: 12 }}>
-              <span style={{ color: TERRA }}>ESCANEANDO…</span>
+              <span style={{ color: BLUE_LT }}>ESCANEANDO…</span>
               <span style={{ color: "rgba(243,239,228,.6)" }}>{Math.min(progress, TOTAL)}/69</span>
             </div>
             <div style={{ height: 6, background: "rgba(243,239,228,.12)", borderRadius: 100, overflow: "hidden", marginBottom: 14 }}>
-              <div style={{ height: "100%", background: TERRA, borderRadius: 100, transition: "width .22s ease", width: `${pct}%` }} />
+              <div style={{ height: "100%", background: BLUE, borderRadius: 100, transition: "width .22s ease", width: `${pct}%` }} />
             </div>
             <div style={{ fontFamily: MONO, fontSize: 13, color: CREAM, display: "flex", alignItems: "center", gap: 9 }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: TERRA, animation: "nk-blink .6s infinite" }} />
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: BLUE_LT, animation: "nk-blink .6s infinite" }} />
               {sourceLabel}
             </div>
           </div>
         )}
 
         {phase === "hit" && (
-          <div style={{ border: "1px solid rgba(232,85,45,.4)", background: "rgba(232,85,45,.08)", borderRadius: 16, padding: 20, animation: "nk-rise .35s ease both" }}>
+          <div style={{ border: "1px solid rgba(232,85,45,.45)", background: "rgba(232,85,45,.1)", borderRadius: 16, padding: 20, animation: "nk-rise .35s ease both" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 9 }}>
-                <span style={{ width: 28, height: 28, borderRadius: "50%", background: TERRA, color: INK, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 15 }}>!</span>
+                <span style={{ width: 28, height: 28, borderRadius: "50%", background: CORAL, color: "#fff", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 15 }}>!</span>
                 <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>Coincidencia detectada</span>
               </span>
               <span style={{ fontFamily: MONO, fontSize: 10, color: "rgba(243,239,228,.5)", border: "1px solid rgba(243,239,228,.2)", borderRadius: 100, padding: "3px 8px" }}>ejemplo</span>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10, fontFamily: MONO, fontSize: 11 }}>
               <span style={{ color: "rgba(243,239,228,.7)", background: "rgba(243,239,228,.08)", borderRadius: 100, padding: "3px 9px" }}>{alert.source}</span>
-              <span style={{ color: INK, background: TERRA, borderRadius: 100, padding: "3px 9px", fontWeight: 700 }}>{alert.tag}</span>
+              <span style={{ color: "#fff", background: CORAL, borderRadius: 100, padding: "3px 9px", fontWeight: 700 }}>{alert.tag}</span>
             </div>
-            <p style={{ margin: 0, fontSize: 14, color: "rgba(243,239,228,.82)", lineHeight: 1.5 }}>{alert.body}</p>
-            <div style={{ marginTop: 14, fontFamily: MONO, fontSize: 12, color: TERRA }}>→ Te avisaríamos por email y WhatsApp el mismo día</div>
+            <p style={{ margin: 0, fontSize: 14, color: "rgba(243,239,228,.85)", lineHeight: 1.5 }}>{alert.body}</p>
+            <div style={{ marginTop: 14, fontFamily: MONO, fontSize: 12, color: CORAL }}>→ Te avisaríamos por email y WhatsApp el mismo día</div>
           </div>
         )}
 
         {phase === "clear" && (
           <div style={{ border: "1px solid rgba(243,239,228,.18)", borderRadius: 16, padding: 20, animation: "nk-rise .35s ease both" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-              <span style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(243,239,228,.12)", color: CREAM, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 15 }}>✓</span>
+              <span style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(157,182,242,.18)", color: BLUE_LT, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 15 }}>✓</span>
               <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 16 }}>Hoy, sin novedades</span>
             </div>
             <p style={{ margin: 0, fontSize: 14, color: "rgba(243,239,228,.72)", lineHeight: 1.5 }}>
