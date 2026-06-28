@@ -61,7 +61,14 @@ async function ingestDate(date: Date) {
         where: {
           sourceId_externalId: { sourceId: source.id, externalId: pub.externalId },
         },
-        update: {}, // las publicaciones oficiales no cambian
+        // Las publicaciones oficiales no cambian, pero sí enriquecemos el
+        // cuerpo (searchText) al reingerir: la primera pasada puede traer solo
+        // el título y una posterior el texto completo.
+        update: {
+          searchText: pub.searchText,
+          summary: pub.summary,
+          actType: pub.actType,
+        },
         create: {
           sourceId: source.id,
           externalId: pub.externalId,

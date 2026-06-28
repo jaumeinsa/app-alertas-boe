@@ -65,13 +65,28 @@ function buildUrl(item: BoeItem): string {
   return `https://www.boe.es/diario_boe/txt.php?id=${item.identificador}`;
 }
 
+const UA =
+  process.env.INGEST_USER_AGENT ?? "NotifikadoBot/0.1 (+https://notifikado.com)";
+
+// Texto completo: activado por defecto. Solo se descarga el cuerpo de los
+// documentos de anuncios (BOE-B-*), que es donde aparecen los nombres y DNIs
+// de personas (notificaciones AEAT/tráfico, edictos judiciales, Tablón Edictal
+// Único…). Los BOE-A-* (disposiciones generales, nombramientos) no se enriquecen.
+const FULLTEXT_ENABLED = process.env.INGEST_FULLTEXT !== "0";
+const FULLTEXT_CONCURRENCY = Math.max(
+  1,
+  parseInt(process.env.INGEST_FULLTEXT_CONCURRENCY ?? "5", 10) || 5
+);
+// Tope de caracteres del cuerpo guardado (acota el almacenamiento; los nombres
+// suelen estar bien dentro de este margen).
+const MAX_BODY_CHARS = 60_000;
+
 async function fetchSumario(date: Date): Promise<unknown | null> {
   const url = `${BASE}/${yyyymmdd(date)}`;
   const res = await fetch(url, {
     headers: {
       Accept: "application/json",
-      "User-Agent":
-        process.env.INGEST_USER_AGENT ?? "NotifikadoBot/0.1 (+https://notifikado.com)",
+      "User-Agent": UA,
     },
     // Cachea el sumario del día: una vez publicado no cambia.
     next: { revalidate: 60 * 60 },
@@ -83,6 +98,52 @@ async function fetchSumario(date: Date): Promise<unknown | null> {
     throw new Error(`BOE sumario ${yyyymmdd(date)} respondió ${res.status}`);
   }
   return res.json();
+}
+
+/** Descarga el texto plano del cuerpo de un documento del BOE vía xml.php. */
+async function fetchDocText(externalId: string): Promise<string | null> {
+  const url = `https://www.boe.es/diario_boe/xml.php?id=${externalId}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { Accept: "application/xml", "User-Agent": UA },
+      next: { revalidate: 60 * 60 * 24 },
+    });
+  } catch {
+    return null;
+  }
+  if (!res.ok) return null;
+
+  const buf = await res.arrayBuffer();
+  const xml = new TextDecoder("utf-8").decode(buf);
+  const m = xml.match(/<texto>([\s\S]*?)<\/texto>/i);
+  const body = m ? m[1] : "";
+  if (!body) return null;
+
+  const plain = body
+    .replace(/<[^>]+>/g, " ") // quita etiquetas HTML/XML
+    .replace(/&[a-z]+;/gi, " ") // entidades
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return plain ? plain.slice(0, MAX_BODY_CHARS) : null;
+}
+
+/** Ejecuta `fn` sobre `items` con un máximo de `concurrency` en paralelo. */
+async function mapPool<T>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<void>
+): Promise<void> {
+  let cursor = 0;
+  async function worker() {
+    while (cursor < items.length) {
+      const i = cursor++;
+      await fn(items[i], i);
+    }
+  }
+  const n = Math.min(concurrency, items.length);
+  await Promise.all(Array.from({ length: n }, () => worker()));
 }
 
 export const boeAdapter: SourceAdapter = {
@@ -110,10 +171,22 @@ export const boeAdapter: SourceAdapter = {
       out.push({
         externalId,
         title,
-        searchText: title, // el sumario solo trae títulos; el cuerpo se enriquece en fase 2
+        searchText: title, // por defecto el título; se enriquece abajo con el cuerpo
         url: buildUrl(item),
         publishedAt: date,
         actType: inferActType(title),
+      });
+    }
+
+    // Fase 2: enriquecer con el texto completo del cuerpo. Solo anuncios
+    // (BOE-B-*), que es donde aparecen los nombres y DNIs de personas.
+    if (FULLTEXT_ENABLED) {
+      const targets = out.filter((p) => /^BOE-B-/.test(p.externalId));
+      await mapPool(targets, FULLTEXT_CONCURRENCY, async (pub) => {
+        const body = await fetchDocText(pub.externalId);
+        if (body) {
+          pub.searchText = `${pub.title}\n${body}`.slice(0, MAX_BODY_CHARS);
+        }
       });
     }
 
