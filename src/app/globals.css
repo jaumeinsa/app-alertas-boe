@@ -48,6 +48,10 @@ body {
   0% { transform: translateY(8px); opacity: 0 }
   100% { transform: translateY(0); opacity: 1 }
 }
+@keyframes nk-scan {
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(100%) }
+}
 
 /* Responsive — las clases de layout se colapsan a 1 columna en móvil.
    El !important vence a los estilos inline (que fijan el grid de escritorio). */
