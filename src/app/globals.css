@@ -15,7 +15,7 @@ html {
 body {
   margin: 0;
   background: #F3EFE4;
-  color: #15140E;
+  color: #1B3160;
   font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
@@ -23,7 +23,7 @@ body {
 
 ::selection {
   background: #E8552D;
-  color: #15140E;
+  color: #1B3160;
 }
 
 /* Animaciones del diseño */

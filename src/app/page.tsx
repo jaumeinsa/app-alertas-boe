@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 /* ── Paleta y tipografías del diseño ────────────────────── */
-const INK = "#15140E";
+const INK = "#1B3160";
 const CREAM = "#F3EFE4";
 const TERRA = "#E8552D";
 const DISPLAY = "'Bricolage Grotesque', sans-serif";
@@ -74,7 +74,7 @@ function Nav() {
         zIndex: 50,
         background: "rgba(243,239,228,.82)",
         backdropFilter: "blur(14px)",
-        borderBottom: "1px solid rgba(21,20,14,.08)",
+        borderBottom: "1px solid rgba(27,49,96,.08)",
       }}
     >
       <nav
@@ -141,7 +141,7 @@ function Hero() {
             Que ninguna notificación <span style={serifAccent}>te pille por sorpresa.</span>
           </h1>
 
-          <p style={{ fontSize: 19, lineHeight: 1.55, maxWidth: "36ch", margin: "24px 0 0", color: "rgba(21,20,14,.74)" }}>
+          <p style={{ fontSize: 19, lineHeight: 1.55, maxWidth: "36ch", margin: "24px 0 0", color: "rgba(27,49,96,.74)" }}>
             Multas, embargos, citaciones, requerimientos. Cuando la Administración no consigue localizarte, lo publica en un boletín oficial y los plazos corren igual.{" "}
             <strong style={{ color: INK, fontWeight: 600 }}>Vigilamos todas las fuentes y te avisamos en cuanto aparece tu nombre.</strong>
           </p>
@@ -172,10 +172,10 @@ function SourceMarquee() {
   const items = ["BOE", "Tablón Edictal Único", "BORME", "50 Boletines Provinciales", "17 Diarios Autonómicos", "BOJA", "DOGC", "DOG", "BOCM", "BOPV", "BOA", "BORM"];
   const loop = [...items, ...items];
   return (
-    <div style={{ marginTop: 48, borderTop: "1px solid rgba(21,20,14,.1)", borderBottom: "1px solid rgba(21,20,14,.1)", padding: "18px 0", overflow: "hidden", position: "relative" }}>
+    <div style={{ marginTop: 48, borderTop: "1px solid rgba(27,49,96,.1)", borderBottom: "1px solid rgba(27,49,96,.1)", padding: "18px 0", overflow: "hidden", position: "relative" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14, width: "max-content", animation: "nk-marquee 32s linear infinite", fontFamily: MONO, fontSize: 14, fontWeight: 500 }}>
         {loop.map((m, i) => (
-          <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 14, color: "rgba(21,20,14,.6)" }}>
+          <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 14, color: "rgba(27,49,96,.6)" }}>
             {m}
             <span style={{ color: TERRA, fontSize: 18 }}>◆</span>
           </span>
@@ -229,17 +229,17 @@ function HowItWorks() {
     <section id="como-funciona" style={{ maxWidth: 1240, margin: "0 auto", padding: "96px 28px" }}>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 52 }}>
         <div>
-          <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>{"// CÓMO FUNCIONA"}</span>
+          <span style={{ ...kicker, color: "rgba(27,49,96,.5)" }}>{"// CÓMO FUNCIONA"}</span>
           <h2 style={{ ...h2Style, margin: "14px 0 0" }}>Tres pasos. Cero sorpresas.</h2>
         </div>
         <a href={PRICING} style={{ textDecoration: "none", color: INK, fontWeight: 600, borderBottom: `2px solid ${TERRA}`, paddingBottom: 3 }}>Ver planes →</a>
       </div>
       <div className="nk-grid3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
         {steps.map((s) => (
-          <div key={s.n} style={{ background: "#fff", border: "1px solid rgba(21,20,14,.09)", borderRadius: 22, padding: 30, position: "relative", overflow: "hidden" }}>
+          <div key={s.n} style={{ background: "#fff", border: "1px solid rgba(27,49,96,.09)", borderRadius: 22, padding: 30, position: "relative", overflow: "hidden" }}>
             <div style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: 64, lineHeight: 1, color: TERRA, WebkitTextStroke: `1.5px ${INK}`, letterSpacing: "-.04em" }}>{s.n}</div>
             <h3 style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 21, letterSpacing: "-.02em", margin: "18px 0 10px" }}>{s.title}</h3>
-            <p style={{ margin: 0, fontSize: 15, color: "rgba(21,20,14,.66)", lineHeight: 1.55 }}>{s.body}</p>
+            <p style={{ margin: 0, fontSize: 15, color: "rgba(27,49,96,.66)", lineHeight: 1.55 }}>{s.body}</p>
           </div>
         ))}
       </div>
@@ -267,15 +267,15 @@ function Coverage({ total }: { total: number }) {
     <section id="cobertura" style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px 96px" }}>
       <div style={{ background: TERRA, borderRadius: 28, padding: "clamp(36px,5vw,64px)", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", bottom: -80, right: -60, width: 280, height: 280 }}>
-          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(21,20,14,.16)", animation: "nk-radar 3s ease-out infinite" }} />
-          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(21,20,14,.16)", animation: "nk-radar 3s ease-out infinite 1.5s" }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(27,49,96,.16)", animation: "nk-radar 3s ease-out infinite" }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(27,49,96,.16)", animation: "nk-radar 3s ease-out infinite 1.5s" }} />
         </div>
         <div className="nk-coverage" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 48, alignItems: "center", position: "relative" }}>
           <div>
             <h2 style={{ ...h2Style, fontSize: "clamp(2.2rem,4.4vw,3.4rem)", lineHeight: 1.0 }}>
               Una suscripción. <span style={serifAccent}>{total}</span> fuentes oficiales vigiladas.
             </h2>
-            <p style={{ fontSize: 17, color: "rgba(21,20,14,.86)", margin: "18px 0 24px", lineHeight: 1.55, maxWidth: "42ch" }}>
+            <p style={{ fontSize: 17, color: "rgba(27,49,96,.86)", margin: "18px 0 24px", lineHeight: 1.55, maxWidth: "42ch" }}>
               No tienes que saber en qué boletín puede salir tu nombre. Cubrimos el mapa completo de publicaciones oficiales de España.
             </p>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 11, fontSize: 15 }}>
@@ -306,8 +306,8 @@ function Pricing() {
   const plans = [
     {
       name: "Personal", price: "9€", per: "/mes", note: "", badge: "",
-      bg: "#fff", fg: INK, border: "rgba(21,20,14,.12)", tick: INK,
-      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(21,20,14,.2)", cta: "Empezar mensual",
+      bg: "#fff", fg: INK, border: "rgba(27,49,96,.12)", tick: INK,
+      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(27,49,96,.2)", cta: "Empezar mensual",
       features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email", "Escaneo del histórico reciente", "Sin permanencia"],
     },
     {
@@ -318,17 +318,17 @@ function Pricing() {
     },
     {
       name: "Familiar", price: "15€", per: "/mes", note: "", badge: "",
-      bg: "#fff", fg: INK, border: "rgba(21,20,14,.12)", tick: INK,
-      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(21,20,14,.2)", cta: "Proteger a mi familia",
+      bg: "#fff", fg: INK, border: "rgba(27,49,96,.12)", tick: INK,
+      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(27,49,96,.2)", cta: "Proteger a mi familia",
       features: ["Hasta 5 nombres vigilados", "Ideal para familias y autónomos", "Avisos por email + WhatsApp", "Panel único de control"],
     },
   ];
   return (
     <section id="precios" style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px 96px" }}>
       <div style={{ textAlign: "center", maxWidth: "44ch", margin: "0 auto 52px" }}>
-        <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>{"// PRECIOS"}</span>
+        <span style={{ ...kicker, color: "rgba(27,49,96,.5)" }}>{"// PRECIOS"}</span>
         <h2 style={{ ...h2Style, margin: "14px 0 12px" }}>Cuesta menos que una multa</h2>
-        <p style={{ fontSize: 17, color: "rgba(21,20,14,.66)", margin: 0, lineHeight: 1.55 }}>
+        <p style={{ fontSize: 17, color: "rgba(27,49,96,.66)", margin: 0, lineHeight: 1.55 }}>
           Sin prueba gratis: una sola notificación detectada a tiempo ya paga años de suscripción. Cancela cuando quieras.
         </p>
       </div>
@@ -374,17 +374,17 @@ function Faq() {
   return (
     <section id="faq" style={{ maxWidth: 880, margin: "0 auto", padding: "0 28px 96px" }}>
       <div style={{ textAlign: "center", marginBottom: 48 }}>
-        <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>{"// PREGUNTAS FRECUENTES"}</span>
+        <span style={{ ...kicker, color: "rgba(27,49,96,.5)" }}>{"// PREGUNTAS FRECUENTES"}</span>
         <h2 style={{ ...h2Style, fontSize: "clamp(2.2rem,4.4vw,3.4rem)", margin: "14px 0 0" }}>Lo que la gente nos pregunta</h2>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {faqs.map((f) => (
-          <details key={f.q} style={{ background: "#fff", border: "1px solid rgba(21,20,14,.09)", borderRadius: 16, overflow: "hidden" }}>
+          <details key={f.q} style={{ background: "#fff", border: "1px solid rgba(27,49,96,.09)", borderRadius: 16, overflow: "hidden" }}>
             <summary style={{ listStyle: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "22px 24px" }}>
               <span style={{ fontFamily: DISPLAY, fontWeight: 600, fontSize: 18, letterSpacing: "-.01em", color: INK }}>{f.q}</span>
-              <span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: "50%", background: "rgba(21,20,14,.06)", color: INK, display: "grid", placeItems: "center", fontSize: 18, fontWeight: 600 }}>+</span>
+              <span style={{ flexShrink: 0, width: 28, height: 28, borderRadius: "50%", background: "rgba(27,49,96,.06)", color: INK, display: "grid", placeItems: "center", fontSize: 18, fontWeight: 600 }}>+</span>
             </summary>
-            <p style={{ margin: 0, padding: "0 24px 24px", fontSize: 16, color: "rgba(21,20,14,.68)", lineHeight: 1.6, maxWidth: "62ch" }}>{f.a}</p>
+            <p style={{ margin: 0, padding: "0 24px 24px", fontSize: 16, color: "rgba(27,49,96,.68)", lineHeight: 1.6, maxWidth: "62ch" }}>{f.a}</p>
           </details>
         ))}
       </div>

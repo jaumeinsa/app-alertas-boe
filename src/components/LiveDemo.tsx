@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
  * (marcados como tales) — nunca son resultados reales (principio RGPD).
  */
 
-const INK = "#15140E";
+const INK = "#1B3160";
 const CREAM = "#F3EFE4";
 const TERRA = "#E8552D";
 const MONO = "'JetBrains Mono', monospace";
@@ -100,7 +100,7 @@ export default function LiveDemo() {
         borderRadius: 26,
         padding: 28,
         color: CREAM,
-        boxShadow: "0 30px 70px -28px rgba(21,20,14,.5)",
+        boxShadow: "0 30px 70px -28px rgba(27,49,96,.5)",
         position: "relative",
         overflow: "hidden",
       }}
