@@ -196,7 +196,7 @@ function Problem() {
     <section style={{ background: INK, color: CREAM, padding: "96px 28px", marginTop: 40 }}>
       <div style={{ maxWidth: 1240, margin: "0 auto" }}>
         <div style={{ maxWidth: "46ch" }}>
-          <span style={{ ...kicker, color: TERRA }}>// EL RIESGO REAL</span>
+          <span style={{ ...kicker, color: TERRA }}>{"// EL RIESGO REAL"}</span>
           <h2 style={{ ...h2Style, margin: "16px 0 0" }}>
             Lo que no sabes <span style={serifAccent}>sí</span> te puede hacer daño
           </h2>
@@ -229,7 +229,7 @@ function HowItWorks() {
     <section id="como-funciona" style={{ maxWidth: 1240, margin: "0 auto", padding: "96px 28px" }}>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20, marginBottom: 52 }}>
         <div>
-          <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>// CÓMO FUNCIONA</span>
+          <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>{"// CÓMO FUNCIONA"}</span>
           <h2 style={{ ...h2Style, margin: "14px 0 0" }}>Tres pasos. Cero sorpresas.</h2>
         </div>
         <a href={PRICING} style={{ textDecoration: "none", color: INK, fontWeight: 600, borderBottom: `2px solid ${TERRA}`, paddingBottom: 3 }}>Ver planes →</a>
@@ -326,7 +326,7 @@ function Pricing() {
   return (
     <section id="precios" style={{ maxWidth: 1240, margin: "0 auto", padding: "0 28px 96px" }}>
       <div style={{ textAlign: "center", maxWidth: "44ch", margin: "0 auto 52px" }}>
-        <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>// PRECIOS</span>
+        <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>{"// PRECIOS"}</span>
         <h2 style={{ ...h2Style, margin: "14px 0 12px" }}>Cuesta menos que una multa</h2>
         <p style={{ fontSize: 17, color: "rgba(21,20,14,.66)", margin: 0, lineHeight: 1.55 }}>
           Sin prueba gratis: una sola notificación detectada a tiempo ya paga años de suscripción. Cancela cuando quieras.
@@ -371,7 +371,7 @@ function Faq() {
   return (
     <section id="faq" style={{ maxWidth: 880, margin: "0 auto", padding: "0 28px 96px" }}>
       <div style={{ textAlign: "center", marginBottom: 48 }}>
-        <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>// PREGUNTAS FRECUENTES</span>
+        <span style={{ ...kicker, color: "rgba(21,20,14,.5)" }}>{"// PREGUNTAS FRECUENTES"}</span>
         <h2 style={{ ...h2Style, fontSize: "clamp(2.2rem,4.4vw,3.4rem)", margin: "14px 0 0" }}>Lo que la gente nos pregunta</h2>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
