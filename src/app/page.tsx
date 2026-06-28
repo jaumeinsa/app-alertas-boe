@@ -34,8 +34,16 @@ const kicker: CSSProperties = {
   letterSpacing: ".04em",
 };
 
-/* Destino de los CTA mientras el checkout (Stripe) no está conectado. */
+/* Anclas para los CTA generales (nav, hero, CTA final): llevan a la tabla de precios. */
 const PRICING = "#precios";
+
+/* Enlaces de pago de Stripe (Payment Links). Pegar la URL "https://buy.stripe.com/…"
+   de cada plan. Si quedan vacíos, el botón hace fallback a la tabla de precios. */
+const PAYMENT_LINKS = {
+  personal: "https://buy.stripe.com/5kQ5kD85F4AS1ay4sw38400",
+  anual: "https://buy.stripe.com/4gMaEXclVffw1ay8IM38401",
+  familiar: "https://buy.stripe.com/28EfZhfy79Vcg5saQU38402",
+};
 
 export default function Home() {
   const total = countCatalog().total;
@@ -312,19 +320,19 @@ function Coverage({ total }: { total: number }) {
 function Pricing() {
   const plans = [
     {
-      name: "Personal", price: "9€", per: "/mes", note: "", badge: "",
+      name: "Personal", price: "9€", per: "/mes", note: "", badge: "", link: PAYMENT_LINKS.personal,
       bg: "#fff", fg: INK, border: "rgba(34,56,107,.14)", tick: BLUE,
       btnBg: "transparent", btnFg: INK, btnBorder: "rgba(34,56,107,.25)", cta: "Empezar mensual",
       features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email", "Escaneo del histórico reciente", "Sin permanencia"],
     },
     {
-      name: "Anual", price: "4,08€", per: "/mes", note: "49 €/año en un pago · ahorras 59 €", badge: "Mejor precio",
+      name: "Anual", price: "4,08€", per: "/mes", note: "49 €/año en un pago · ahorras 59 €", badge: "Mejor precio", link: PAYMENT_LINKS.anual,
       bg: INK, fg: CREAM, border: INK, tick: BLUE_LT,
       btnBg: BLUE, btnFg: "#fff", btnBorder: BLUE, cta: "Empezar ahora",
       features: ["Todo lo del plan Personal", "Avisos por email + WhatsApp", "Pago único al año", "Menos de la mitad que el mensual"],
     },
     {
-      name: "Familiar", price: "15€", per: "/mes", note: "", badge: "",
+      name: "Familiar", price: "15€", per: "/mes", note: "", badge: "", link: PAYMENT_LINKS.familiar,
       bg: "#fff", fg: INK, border: "rgba(34,56,107,.14)", tick: BLUE,
       btnBg: "transparent", btnFg: INK, btnBorder: "rgba(34,56,107,.25)", cta: "Proteger a mi familia",
       features: ["Hasta 5 nombres vigilados", "Ideal para familias y autónomos", "Avisos por email + WhatsApp", "Panel único de control"],
@@ -361,7 +369,13 @@ function Pricing() {
                 </li>
               ))}
             </ul>
-            <a href="#empezar" style={{ textDecoration: "none", textAlign: "center", borderRadius: 12, padding: 13, fontWeight: 700, fontSize: 15, background: pl.btnBg, color: pl.btnFg, border: `1px solid ${pl.btnBorder}` }}>{pl.cta}</a>
+            <a
+              href={pl.link || "#empezar"}
+              {...(pl.link ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              style={{ textDecoration: "none", textAlign: "center", borderRadius: 12, padding: 13, fontWeight: 700, fontSize: 15, background: pl.btnBg, color: pl.btnFg, border: `1px solid ${pl.btnBorder}` }}
+            >
+              {pl.cta}
+            </a>
           </div>
         ))}
       </div>
