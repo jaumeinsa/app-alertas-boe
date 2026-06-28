@@ -6,12 +6,13 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://notifikado.com";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: "Notifikado — Que no te pille por sorpresa el BOE",
+    default: "Notifikado — Que ninguna notificación te pille por sorpresa",
     template: "%s · Notifikado",
   },
   description:
-    "Notifikado vigila el BOE, el Tablón Edictal Único, el BORME y los boletines provinciales y autonómicos por ti. Te avisamos al instante si tu nombre aparece: multas, embargos, citaciones judiciales y más.",
+    "Notifikado vigila todas las fuentes oficiales de España (BOE, Tablón Edictal Único, BORME, boletines provinciales y autonómicos) y te avisa el mismo día si tu nombre aparece: multas, embargos, citaciones, requerimientos y más.",
   keywords: [
+    "notificaciones oficiales",
     "alertas BOE",
     "Tablón Edictal Único",
     "multas DGT notificación",
@@ -21,9 +22,9 @@ export const metadata: Metadata = {
     "notificaciones edictales",
   ],
   openGraph: {
-    title: "Notifikado — Que no te pille por sorpresa el BOE",
+    title: "Notifikado — Que ninguna notificación te pille por sorpresa",
     description:
-      "Te avisamos al instante si tu nombre aparece en un boletín oficial. Multas, embargos, citaciones... antes de que sea tarde.",
+      "Vigilamos todas las fuentes oficiales y te avisamos el mismo día si tu nombre aparece. Multas, embargos, citaciones... antes de que sea tarde.",
     url: appUrl,
     siteName: "Notifikado",
     locale: "es_ES",
@@ -31,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Notifikado — Que no te pille por sorpresa el BOE",
+    title: "Notifikado — Que ninguna notificación te pille por sorpresa",
     description:
-      "Vigilamos los boletines oficiales por ti y te avisamos si tu nombre aparece.",
+      "Vigilamos las fuentes oficiales por ti y te avisamos el mismo día si tu nombre aparece.",
   },
   alternates: { canonical: appUrl },
 };
