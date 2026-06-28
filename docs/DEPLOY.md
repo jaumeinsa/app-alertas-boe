@@ -3,6 +3,26 @@
 Guía para poner Notifikado en producción en `notifikado.com` usando Docker
 Compose + Nginx (HTTPS) + cron para los workers.
 
+## Opción rápida: script automático
+
+Una vez clonado el repo en el VPS, todo el despliegue (Docker, contenedores,
+migraciones, seed, Nginx y HTTPS) lo hace un único script idempotente:
+
+```bash
+sudo bash scripts/deploy-vps.sh notifikado.com tu-email@ejemplo.com
+```
+
+- Genera `.env` con una contraseña de BD aleatoria la primera vez.
+- Si el dominio **ya resuelve a la IP del VPS**, emite el certificado HTTPS
+  automáticamente. Si no, deja la app en HTTP e indica el comando de Certbot
+  para ejecutar cuando el DNS haya propagado.
+- Programa el cron diario de ingesta + matching.
+
+> Requisito para el HTTPS: los registros DNS `A` de `@` y `www` deben apuntar a
+> la IP del VPS **antes** de emitir el certificado.
+
+El resto de esta guía explica los pasos manuales equivalentes.
+
 ## 1. Requisitos en el VPS
 
 - Ubuntu/Debian con acceso `root` o `sudo`.

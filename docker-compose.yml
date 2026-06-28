@@ -1,12 +1,13 @@
 # Notifikado — stack completo para el VPS de Hostinger.
 #   docker compose up -d --build
 #
-# Incluye:
-#   - db:  PostgreSQL persistente
-#   - web: la app Next.js (landing + demo + API + dashboard)
-#   - cron: worker diario de ingesta + matching
+# Servicios:
+#   - db:      PostgreSQL persistente
+#   - migrate: aplica migraciones Prisma + seed del catálogo (corre y termina)
+#   - web:     la app Next.js (landing + demo + API + dashboard)
+#   - worker:  contenedor con dependencias completas para los workers (cron del host)
 #
-# Pon un Nginx/Caddy delante para HTTPS en notifikado.com (ver docs/DEPLOY.md).
+# Pon un Nginx/Certbot delante para HTTPS en notifikado.com (ver scripts/deploy-vps.sh).
 
 services:
   db:
@@ -26,6 +27,21 @@ services:
       timeout: 5s
       retries: 5
 
+  # Aplica el esquema y carga el catálogo de fuentes. Usa la imagen con
+  # dependencias completas (target builder) porque incluye la CLI de Prisma y tsx.
+  migrate:
+    build:
+      context: .
+      target: builder
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts"
+    restart: "no"
+
   web:
     build: .
     restart: unless-stopped
@@ -33,18 +49,18 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     ports:
       - "127.0.0.1:3000:3000"
-    command: >
-      sh -c "npx prisma migrate deploy && node server.js"
 
-  # Worker diario: ingesta de boletines + matching.
-  # Por simplicidad usa el mismo build; en producción puedes lanzarlo con un
-  # cron del host (ver docs/DEPLOY.md) en vez de un contenedor permanente.
-  cron:
-    build: .
+  # Contenedor persistente con dependencias completas para ejecutar los workers.
+  # El cron del host lanza la ingesta/matching con:
+  #   docker compose exec -T worker sh -c "npx tsx scripts/ingest.ts 0 1 && npx tsx scripts/match.ts 2"
+  worker:
+    build:
+      context: .
+      target: builder
     restart: unless-stopped
     env_file: .env
     environment:
@@ -52,11 +68,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    entrypoint: ["sh", "-c"]
-    command:
-      - |
-        echo "Worker en espera. Programa la ingesta con cron del host o un scheduler."
-        tail -f /dev/null
+    command: sh -c "tail -f /dev/null"
 
 volumes:
   pgdata:
