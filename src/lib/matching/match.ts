@@ -34,10 +34,36 @@ export interface MatchResult {
   matchedOn: string[];
 }
 
-/** ¿Aparecen TODOS los tokens del nombre dentro del texto del documento? */
-function nameAppearsInText(nameTokens: string[], haystack: string): boolean {
+/**
+ * ¿Aparecen TODOS los tokens del nombre JUNTOS (en proximidad) en el texto?
+ *
+ * Exigir proximidad —y no solo que cada token aparezca en algún punto del
+ * documento— evita falsos positivos en documentos largos que agregan a muchas
+ * personas (p. ej. un BORME provincial con decenas de empresas, donde "Jaume",
+ * "Insa" y "Pérez" podrían pertenecer a personas distintas). El nombre real
+ * aparece como secuencia contigua: "INSA PÉREZ, JAUME" o "Jaume Insa Pérez".
+ */
+function nameAppearsInText(
+  nameTokens: string[],
+  haystack: string,
+  window = 60
+): boolean {
   if (nameTokens.length === 0) return false;
-  return nameTokens.every((t) => haystack.includes(t));
+  // Token de anclaje: el más largo (suele ser el más distintivo).
+  const anchor = nameTokens.reduce((a, b) => (b.length > a.length ? b : a));
+  const others = nameTokens.filter((t) => t !== anchor);
+
+  let from = 0;
+  for (;;) {
+    const i = haystack.indexOf(anchor, from);
+    if (i < 0) return false;
+    const slice = haystack.slice(
+      Math.max(0, i - window),
+      i + anchor.length + window
+    );
+    if (others.every((t) => slice.includes(t))) return true;
+    from = i + 1;
+  }
 }
 
 export function evaluateMatch(
