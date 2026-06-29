@@ -7,9 +7,10 @@
 
 import { boeAdapter } from "./boe";
 import { bormeAdapter } from "./borme";
+import { dogvAdapter } from "./dogv";
 import { SourceAdapter } from "./types";
 
-export const ADAPTERS: SourceAdapter[] = [boeAdapter, bormeAdapter];
+export const ADAPTERS: SourceAdapter[] = [boeAdapter, bormeAdapter, dogvAdapter];
 
 export function enabledAdapters(): SourceAdapter[] {
   // INGEST_ONLY="BORME" (o "BOE,BORME") limita la ingesta a esas fuentes,
