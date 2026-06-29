@@ -101,12 +101,12 @@ export const SOURCE_CATALOG: SourceCatalogEntry[] = [
     type: "BOE",
     ingestEnabled: true,
   },
-  // BORME — catalogada, adaptador en construcción.
+  // BORME — Registro Mercantil (nombramientos/ceses de administradores, etc.).
   {
     code: "BORME",
     name: "Boletín Oficial del Registro Mercantil",
     type: "BORME",
-    ingestEnabled: false,
+    ingestEnabled: true,
   },
   // 50 boletines provinciales.
   ...PROVINCES.map(([ine, name]) => ({

@@ -6,12 +6,16 @@
  */
 
 import { boeAdapter } from "./boe";
+import { bormeAdapter } from "./borme";
 import { SourceAdapter } from "./types";
 
-export const ADAPTERS: SourceAdapter[] = [boeAdapter];
+export const ADAPTERS: SourceAdapter[] = [boeAdapter, bormeAdapter];
 
 export function enabledAdapters(): SourceAdapter[] {
-  return ADAPTERS.filter((a) => a.enabled);
+  // INGEST_ONLY="BORME" (o "BOE,BORME") limita la ingesta a esas fuentes,
+  // útil para backfillear una sola fuente sin re-descargar las demás.
+  const only = process.env.INGEST_ONLY?.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
+  return ADAPTERS.filter((a) => a.enabled && (!only || only.length === 0 || only.includes(a.code)));
 }
 
 export function getAdapter(code: string): SourceAdapter | undefined {
