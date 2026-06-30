@@ -7,6 +7,7 @@
 
 import { boeAdapter } from "./boe";
 import { bojaAdapter } from "./boja";
+import { bocCanariasAdapter } from "./boc_canarias";
 import { bocylAdapter } from "./bocyl";
 import { bonAdapter } from "./bon";
 import { borAdapter } from "./bor";
@@ -30,6 +31,7 @@ export const ADAPTERS: SourceAdapter[] = [
   borAdapter,
   dogAdapter,
   bonAdapter,
+  bocCanariasAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
