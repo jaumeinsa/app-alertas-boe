@@ -10,10 +10,17 @@
 import { inferActType, NormalizedPublication, SourceAdapter } from "./types";
 import { CONCURRENCY, MAX_BODY_CHARS, ddmmyyyy, fetchJson, fetchText, mapPool } from "./util";
 
-const HEADERS = {
+// El sumario exige Accept: application/json; el /txt devuelve 406 con ese
+// Accept y 200 (text/plain) sin él.
+const JSON_HEADERS = {
   Referer: "https://www.borm.es/",
   "X-Requested-With": "XMLHttpRequest",
   Accept: "application/json",
+};
+const TXT_HEADERS = {
+  Referer: "https://www.borm.es/",
+  "X-Requested-With": "XMLHttpRequest",
+  Accept: "text/plain, */*",
 };
 
 interface BormAnuncio {
@@ -32,7 +39,7 @@ export const bormCcaaAdapter: SourceAdapter = {
     const f = ddmmyyyy(date); // DD-MM-YYYY
     const sumario = (await fetchJson(
       `https://www.borm.es/services/boletin/fecha/${f}/sumario`,
-      { headers: HEADERS }
+      { headers: JSON_HEADERS }
     )) as { anunciosBoletin?: BormAnuncio[] } | null;
     const anuncios = sumario?.anunciosBoletin;
     if (!anuncios || anuncios.length === 0) return [];
@@ -50,7 +57,7 @@ export const bormCcaaAdapter: SourceAdapter = {
     await mapPool(out, CONCURRENCY, async (pub) => {
       const txt = await fetchText(
         `https://www.borm.es/services/anuncio/${pub.externalId}/txt`,
-        { headers: HEADERS }
+        { headers: TXT_HEADERS }
       );
       if (txt) pub.searchText = `${pub.title}\n${txt}`.slice(0, MAX_BODY_CHARS);
     });
