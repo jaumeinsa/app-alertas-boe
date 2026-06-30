@@ -11,6 +11,8 @@ import { inferActType, NormalizedPublication, SourceAdapter } from "./types";
 import { CONCURRENCY, MAX_BODY_CHARS, fetchText, mapPool, stripHtml, yyyymmdd } from "./util";
 
 const BASE = "https://www.xunta.gal/dog/Publicados";
+// El WAF de xunta.gal devuelve 500 sin Referer.
+const HEADERS = { Referer: "https://www.xunta.gal/dog/" };
 
 function cleanDoc(html: string): string {
   return stripHtml(
@@ -38,7 +40,7 @@ export const dogAdapter: SourceAdapter = {
     let anySection = false;
 
     for (let n = 1; n <= 6; n++) {
-      const html = await fetchText(`${dir}/Secciones${n}_es.html`);
+      const html = await fetchText(`${dir}/Secciones${n}_es.html`, { headers: HEADERS });
       if (html === null) {
         if (n === 1) return []; // sin boletín ese día
         continue;
@@ -64,7 +66,7 @@ export const dogAdapter: SourceAdapter = {
     if (!anySection) return [];
 
     await mapPool(out, CONCURRENCY, async (pub) => {
-      const html = await fetchText(`${dir}/${pub.externalId}_es.html`);
+      const html = await fetchText(`${dir}/${pub.externalId}_es.html`, { headers: HEADERS });
       if (html) pub.searchText = `${pub.title}\n${cleanDoc(html)}`.slice(0, MAX_BODY_CHARS);
     });
 

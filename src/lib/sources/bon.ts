@@ -58,19 +58,20 @@ export const bonAdapter: SourceAdapter = {
         `https://bon.navarra.es/es/boletin/-/sumario/${year}/${numero}`
       );
       if (!sumario) continue;
-      const re = /<a[^>]+href="(\/es\/anuncio\/-\/texto\/\d+\/\d+\/(\d+))"[^>]*>([\s\S]*?)<\/a>/g;
+      const re =
+        /href="[^"]*?\/es\/anuncio\/-\/texto\/(\d+)\/(\d+)\/(\d+)[^"]*"[^>]*>([\s\S]*?)<\/a>/g;
       let m: RegExpExecArray | null;
       while ((m = re.exec(sumario)) !== null) {
-        const seq = m[2];
-        const externalId = `${year}/${numero}/${seq}`;
+        const [, a, num, seq, anchor] = m;
+        const externalId = `${a}/${num}/${seq}`;
         if (seen.has(externalId)) continue;
         seen.add(externalId);
-        const title = stripHtml(m[3]);
+        const title = stripHtml(anchor);
         out.push({
           externalId,
           title,
           searchText: title,
-          url: `https://bon.navarra.es${m[1]}`,
+          url: `https://bon.navarra.es/es/anuncio/-/texto/${a}/${num}/${seq}`,
           publishedAt: date,
           actType: inferActType(title),
           region: "Navarra",
