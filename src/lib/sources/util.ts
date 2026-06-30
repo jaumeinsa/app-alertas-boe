@@ -77,13 +77,26 @@ async function fetchRetry(
   return null;
 }
 
+// Cabeceras de navegador: algunas sedes (xunta.gal, etc.) devuelven 500/bloqueo
+// si falta Accept/Accept-Language, aunque el User-Agent sea de navegador.
+const ACCEPT_LANG = "es-ES,es;q=0.9,en;q=0.8";
+const ACCEPT_HTML =
+  "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
+
 export async function fetchJson(
   url: string,
   opts: FetchOpts = {}
 ): Promise<unknown | null> {
   const res = await fetchRetry(
     url,
-    { headers: { Accept: "application/json", "User-Agent": UA, ...opts.headers } },
+    {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Accept-Language": ACCEPT_LANG,
+        "User-Agent": UA,
+        ...opts.headers,
+      },
+    },
     opts.retries ?? 2
   );
   if (!res) return null;
@@ -100,7 +113,14 @@ export async function fetchText(
 ): Promise<string | null> {
   const res = await fetchRetry(
     url,
-    { headers: { "User-Agent": UA, ...opts.headers } },
+    {
+      headers: {
+        Accept: ACCEPT_HTML,
+        "Accept-Language": ACCEPT_LANG,
+        "User-Agent": UA,
+        ...opts.headers,
+      },
+    },
     opts.retries ?? 2
   );
   if (!res) return null;
