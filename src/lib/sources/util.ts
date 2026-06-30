@@ -2,10 +2,11 @@
  * Utilidades compartidas por los adaptadores de fuentes (CCAA, BOPs, ...).
  */
 
-// User-Agent de NAVEGADOR: muchas sedes autonómicas (euskadi, etc.) tienen un
-// WAF que bloquea UAs que contienen "Bot". No usar INGEST_USER_AGENT aquí.
+// User-Agent de NAVEGADOR (Windows Chrome, el más universal): los WAF de varias
+// sedes bloquean UAs con "Bot" e incluso el UA de Mac (xunta.gal da 500).
+// No usar INGEST_USER_AGENT aquí.
 export const UA =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 export const CONCURRENCY = Math.max(
