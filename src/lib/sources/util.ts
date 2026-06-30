@@ -49,22 +49,44 @@ interface FetchOpts {
   headers?: Record<string, string>;
   /** Charset para decodificar el cuerpo (p.ej. "iso-8859-1"). Por defecto utf-8. */
   charset?: string;
+  /** Reintentos ante bloqueo/red (WAF, 429/403/503). Por defecto 2. */
+  retries?: number;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Fetch con reintentos y backoff ante errores transitorios o WAF. */
+async function fetchRetry(
+  url: string,
+  init: RequestInit,
+  retries: number
+): Promise<Response | null> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, init);
+      // 429/403/503 suelen ser rate-limit/WAF transitorio → reintentar.
+      if (res.ok) return res;
+      if (![429, 403, 503, 502, 500].includes(res.status) || attempt === retries) {
+        return res.ok ? res : null;
+      }
+    } catch {
+      if (attempt === retries) return null;
+    }
+    await sleep(700 * (attempt + 1) + Math.floor(attempt * 300));
+  }
+  return null;
 }
 
 export async function fetchJson(
   url: string,
   opts: FetchOpts = {}
 ): Promise<unknown | null> {
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      headers: { Accept: "application/json", "User-Agent": UA, ...opts.headers },
-      next: { revalidate: 60 * 60 },
-    });
-  } catch {
-    return null;
-  }
-  if (!res.ok) return null;
+  const res = await fetchRetry(
+    url,
+    { headers: { Accept: "application/json", "User-Agent": UA, ...opts.headers } },
+    opts.retries ?? 2
+  );
+  if (!res) return null;
   try {
     return await res.json();
   } catch {
@@ -76,16 +98,12 @@ export async function fetchText(
   url: string,
   opts: FetchOpts = {}
 ): Promise<string | null> {
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      headers: { "User-Agent": UA, ...opts.headers },
-      next: { revalidate: 60 * 60 * 24 },
-    });
-  } catch {
-    return null;
-  }
-  if (!res.ok) return null;
+  const res = await fetchRetry(
+    url,
+    { headers: { "User-Agent": UA, ...opts.headers } },
+    opts.retries ?? 2
+  );
+  if (!res) return null;
   try {
     const buf = await res.arrayBuffer();
     return new TextDecoder(opts.charset ?? "utf-8").decode(buf);
