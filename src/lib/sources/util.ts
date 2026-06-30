@@ -21,6 +21,8 @@ export const MAX_BODY_CHARS = 200_000;
 /** Quita etiquetas HTML/XML y normaliza espacios. */
 export function stripHtml(html: string): string {
   return html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<!\[CDATA\[/g, " ")
     .replace(/\]\]>/g, " ")
     .replace(/<[^>]+>/g, " ")

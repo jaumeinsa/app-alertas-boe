@@ -96,6 +96,12 @@ const AUTONOMIC: Array<[string, string, string]> = [
 /** INE de las provincias cuyo BOP ya tiene adaptador activo. */
 const BOP_ENABLED = new Set<string>(["46"]); // Valencia
 
+/** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
+const AUTO_ENABLED = new Set<string>([
+  "BOJA", "BOA", "BOPA", "BOC_CANARIAS", "DOCM", "BOCYL", "DOGC",
+  "DOGV", "DOE", "DOG", "BORM", "BON", "BOPV", "BOR",
+]);
+
 export const SOURCE_CATALOG: SourceCatalogEntry[] = [
   // Estatales — implementadas.
   {
@@ -126,7 +132,7 @@ export const SOURCE_CATALOG: SourceCatalogEntry[] = [
     name,
     type: "AUTONOMIC" as SourceType,
     region,
-    ingestEnabled: false,
+    ingestEnabled: AUTO_ENABLED.has(code),
   })),
 ];
 

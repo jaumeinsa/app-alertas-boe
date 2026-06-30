@@ -5,8 +5,12 @@
  * se añaden aquí y la ingesta los recogerá automáticamente.
  */
 
+import { boaAdapter } from "./boa";
 import { boeAdapter } from "./boe";
 import { bojaAdapter } from "./boja";
+import { bopaAdapter } from "./bopa";
+import { docmAdapter } from "./docm";
+import { doeAdapter } from "./doe";
 import { bocCanariasAdapter } from "./boc_canarias";
 import { bocylAdapter } from "./bocyl";
 import { bonAdapter } from "./bon";
@@ -34,6 +38,10 @@ export const ADAPTERS: SourceAdapter[] = [
   bonAdapter,
   bocCanariasAdapter,
   bopValenciaAdapter,
+  boaAdapter,
+  docmAdapter,
+  doeAdapter,
+  bopaAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
