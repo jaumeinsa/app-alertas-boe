@@ -12,6 +12,7 @@ import { borAdapter } from "./bor";
 import { bormCcaaAdapter } from "./borm_ccaa";
 import { bormeAdapter } from "./borme";
 import { bopvAdapter } from "./bopv";
+import { dogAdapter } from "./dog";
 import { dogcAdapter } from "./dogc";
 import { dogvAdapter } from "./dogv";
 import { SourceAdapter } from "./types";
@@ -26,6 +27,7 @@ export const ADAPTERS: SourceAdapter[] = [
   bopvAdapter,
   bocylAdapter,
   borAdapter,
+  dogAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
