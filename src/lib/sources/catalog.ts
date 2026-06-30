@@ -93,6 +93,9 @@ const AUTONOMIC: Array<[string, string, string]> = [
   ["BOR", "Boletín Oficial de La Rioja", "La Rioja"],
 ];
 
+/** INE de las provincias cuyo BOP ya tiene adaptador activo. */
+const BOP_ENABLED = new Set<string>(["46"]); // Valencia
+
 export const SOURCE_CATALOG: SourceCatalogEntry[] = [
   // Estatales — implementadas.
   {
@@ -108,13 +111,14 @@ export const SOURCE_CATALOG: SourceCatalogEntry[] = [
     type: "BORME",
     ingestEnabled: true,
   },
-  // 50 boletines provinciales.
+  // 50 boletines provinciales. Los que ya tienen adaptador funcional van con
+  // ingestEnabled: true (su INE en BOP_ENABLED).
   ...PROVINCES.map(([ine, name]) => ({
     code: `BOP_${ine}`,
     name: `Boletín Oficial de la Provincia de ${name}`,
     type: "BOP" as SourceType,
     region: name,
-    ingestEnabled: false,
+    ingestEnabled: BOP_ENABLED.has(ine),
   })),
   // Autonómicos.
   ...AUTONOMIC.map(([code, name, region]) => ({

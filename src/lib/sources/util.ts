@@ -2,6 +2,8 @@
  * Utilidades compartidas por los adaptadores de fuentes (CCAA, BOPs, ...).
  */
 
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
+
 // User-Agent de NAVEGADOR (Windows Chrome, el más universal): los WAF de varias
 // sedes bloquean UAs con "Bot" e incluso el UA de Mac (xunta.gal da 500).
 // No usar INGEST_USER_AGENT aquí.
@@ -131,6 +133,67 @@ export async function fetchText(
   } catch {
     return null;
   }
+}
+
+/**
+ * Descarga un PDF como Buffer. Verifica que de verdad sea un PDF (algunas sedes
+ * devuelven una página HTML de error con código 200 cuando no hay boletín).
+ */
+export async function fetchBuffer(
+  url: string,
+  opts: FetchOpts = {}
+): Promise<Buffer | null> {
+  const res = await fetchRetry(
+    url,
+    {
+      headers: {
+        Accept: "application/pdf,application/octet-stream,*/*",
+        "Accept-Language": ACCEPT_LANG,
+        "User-Agent": UA,
+        ...opts.headers,
+      },
+    },
+    opts.retries ?? 2
+  );
+  if (!res) return null;
+  try {
+    const buf = Buffer.from(await res.arrayBuffer());
+    const ct = res.headers.get("content-type") ?? "";
+    const isPdf =
+      ct.includes("pdf") || buf.subarray(0, 5).toString("latin1") === "%PDF-";
+    return isPdf ? buf : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Extrae el texto de un PDF (capa de texto, sin OCR).
+ *
+ * Conserva los saltos de línea (colapsa solo espacios horizontales) porque
+ * algunos adaptadores los necesitan para parsear sumarios línea a línea.
+ */
+export async function pdfToText(buf: Buffer): Promise<string> {
+  try {
+    const data = await pdfParse(buf);
+    return (data.text ?? "")
+      .replace(/[ \t\f\v]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  } catch {
+    return "";
+  }
+}
+
+/** Descarga un PDF y devuelve su texto, o null si no es PDF/está vacío. */
+export async function fetchPdfText(
+  url: string,
+  opts: FetchOpts = {}
+): Promise<string | null> {
+  const buf = await fetchBuffer(url, opts);
+  if (!buf) return null;
+  const text = await pdfToText(buf);
+  return text || null;
 }
 
 /** YYYYMMDD */
