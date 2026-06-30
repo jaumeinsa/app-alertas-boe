@@ -21,6 +21,11 @@ function daysAgo(n: number): Date {
   return d;
 }
 
+/** PostgreSQL no admite el byte NUL (0x00) en columnas text; quítalo. */
+function stripNul<T extends string | null | undefined>(s: T): T {
+  return (typeof s === "string" ? s.replace(/\x00/g, "") : s) as T;
+}
+
 /** Garantiza que el catálogo de fuentes existe en la base de datos. */
 async function ensureSources() {
   for (const entry of SOURCE_CATALOG) {
@@ -56,30 +61,41 @@ async function ingestDate(date: Date) {
       continue;
     }
 
+    let ok = 0;
     for (const pub of pubs) {
-      await prisma.publication.upsert({
-        where: {
-          sourceId_externalId: { sourceId: source.id, externalId: pub.externalId },
-        },
-        // Las publicaciones oficiales no cambian, pero sí enriquecemos el
-        // cuerpo (searchText) al reingerir: la primera pasada puede traer solo
-        // el título y una posterior el texto completo.
-        update: {
-          searchText: pub.searchText,
-          summary: pub.summary,
-          actType: pub.actType,
-        },
-        create: {
-          sourceId: source.id,
-          externalId: pub.externalId,
-          title: pub.title,
-          summary: pub.summary,
-          searchText: pub.searchText,
-          url: pub.url,
-          publishedAt: pub.publishedAt,
-          actType: pub.actType,
-        },
-      });
+      // Un documento problemático (p.ej. PDF con bytes inválidos) no debe tumbar
+      // la ingesta del resto del día/año: se registra y se continúa.
+      try {
+        await prisma.publication.upsert({
+          where: {
+            sourceId_externalId: { sourceId: source.id, externalId: pub.externalId },
+          },
+          // Las publicaciones oficiales no cambian, pero sí enriquecemos el
+          // cuerpo (searchText) al reingerir: la primera pasada puede traer solo
+          // el título y una posterior el texto completo.
+          update: {
+            searchText: stripNul(pub.searchText),
+            summary: stripNul(pub.summary),
+            actType: pub.actType,
+          },
+          create: {
+            sourceId: source.id,
+            externalId: pub.externalId,
+            title: stripNul(pub.title),
+            summary: stripNul(pub.summary),
+            searchText: stripNul(pub.searchText),
+            url: pub.url,
+            publishedAt: pub.publishedAt,
+            actType: pub.actType,
+          },
+        });
+        ok++;
+      } catch (err) {
+        console.error(
+          `  ✗ upsert ${adapter.code} ${pub.externalId}:`,
+          err instanceof Error ? err.message : err
+        );
+      }
     }
 
     await prisma.source.update({
@@ -88,7 +104,7 @@ async function ingestDate(date: Date) {
     });
 
     console.log(
-      `✓ ${adapter.code} ${date.toISOString().slice(0, 10)}: ${pubs.length} publicaciones procesadas`
+      `✓ ${adapter.code} ${date.toISOString().slice(0, 10)}: ${ok}/${pubs.length} publicaciones procesadas`
     );
   }
 }

@@ -177,6 +177,9 @@ export async function pdfToText(buf: Buffer): Promise<string> {
   try {
     const data = await pdfParse(buf);
     return (data.text ?? "")
+      // PostgreSQL (text/tsvector) NO admite el byte NUL ni otros controles C0;
+      // algunos PDF los cuelan. Quitarlos (preservando \t y \n).
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "")
       .replace(/[ \t\f\v]+/g, " ")
       .replace(/\n{3,}/g, "\n\n")
       .trim();
