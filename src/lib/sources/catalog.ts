@@ -99,7 +99,7 @@ const BOP_ENABLED = new Set<string>(["46"]); // Valencia
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
 const AUTO_ENABLED = new Set<string>([
   "BOJA", "BOA", "BOPA", "BOC_CANARIAS", "DOCM", "BOCYL", "DOGC",
-  "DOGV", "DOE", "DOG", "BOCM", "BORM", "BON", "BOPV", "BOR",
+  "DOGV", "DOE", "DOG", "BOCM", "BORM", "BON", "BOPV", "BOR", "BOC_CANTABRIA",
 ]);
 
 export const SOURCE_CATALOG: SourceCatalogEntry[] = [

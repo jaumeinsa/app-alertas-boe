@@ -8,6 +8,7 @@
 import { boaAdapter } from "./boa";
 import { bocmAdapter } from "./bocm";
 import { boeAdapter } from "./boe";
+import { bocCantabriaAdapter } from "./boc_cantabria";
 import { bojaAdapter } from "./boja";
 import { bopaAdapter } from "./bopa";
 import { docmAdapter } from "./docm";
@@ -44,6 +45,7 @@ export const ADAPTERS: SourceAdapter[] = [
   doeAdapter,
   bopaAdapter,
   bocmAdapter,
+  bocCantabriaAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
