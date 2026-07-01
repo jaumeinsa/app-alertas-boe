@@ -100,6 +100,7 @@ const BOP_ENABLED = new Set<string>(["46"]); // Valencia
 const AUTO_ENABLED = new Set<string>([
   "BOJA", "BOA", "BOPA", "BOC_CANARIAS", "DOCM", "BOCYL", "DOGC",
   "DOGV", "DOE", "DOG", "BOCM", "BORM", "BON", "BOPV", "BOR", "BOC_CANTABRIA",
+  "BOIB",
 ]);
 
 export const SOURCE_CATALOG: SourceCatalogEntry[] = [
