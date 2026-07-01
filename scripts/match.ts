@@ -64,25 +64,33 @@ async function main() {
 
       if (!result.isMatch || result.score < MIN_SCORE) continue;
 
-      const created = await prisma.match
-        .create({
-          data: {
+      // Evita el create-que-falla (y su ruido en el log) al reejecutar sobre
+      // publicaciones ya casadas: comprobamos primero la unique(profile, pub).
+      const already = await prisma.match.findUnique({
+        where: {
+          profileId_publicationId: {
             profileId: profile.id,
             publicationId: pub.id,
-            score: result.score,
-            matchedOn: result.matchedOn,
           },
-        })
-        .catch(() => null); // unique(profileId, publicationId) → ya existía
+        },
+        select: { id: true },
+      });
+      if (already) continue;
 
-      if (created) {
-        newMatches++;
-        console.log(
-          `  ⚠ ${profile.fullName} ↔ ${pub.title.slice(0, 70)}… (${Math.round(
-            result.score * 100
-          )}%)`
-        );
-      }
+      await prisma.match.create({
+        data: {
+          profileId: profile.id,
+          publicationId: pub.id,
+          score: result.score,
+          matchedOn: result.matchedOn,
+        },
+      });
+      newMatches++;
+      console.log(
+        `  ⚠ ${profile.fullName} ↔ ${pub.title.slice(0, 70)}… (${Math.round(
+          result.score * 100
+        )}%)`
+      );
     }
   }
 
