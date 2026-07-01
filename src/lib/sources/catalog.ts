@@ -94,7 +94,11 @@ const AUTONOMIC: Array<[string, string, string]> = [
 ];
 
 /** INE de las provincias cuyo BOP ya tiene adaptador activo. */
-const BOP_ENABLED = new Set<string>(["46"]); // Valencia
+const BOP_ENABLED = new Set<string>([
+  "46", // Valencia
+  "14", // Córdoba
+  "23", // Jaén
+]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
 const AUTO_ENABLED = new Set<string>([
