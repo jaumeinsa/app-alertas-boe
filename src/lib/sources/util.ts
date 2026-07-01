@@ -60,7 +60,15 @@ interface FetchOpts {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Fetch con reintentos y backoff ante errores transitorios o WAF. */
+// Timeout por intento. CRÍTICO: fetch de Node no tiene timeout por defecto, y
+// una conexión colgada (sede que acepta y no responde) bloqueaba el backfill
+// para siempre. Con AbortSignal.timeout el intento aborta y reintenta.
+const FETCH_TIMEOUT_MS = Math.max(
+  5000,
+  parseInt(process.env.INGEST_FETCH_TIMEOUT_MS ?? "45000", 10) || 45000
+);
+
+/** Fetch con reintentos, backoff y timeout ante errores transitorios o WAF. */
 async function fetchRetry(
   url: string,
   init: RequestInit,
@@ -68,7 +76,10 @@ async function fetchRetry(
 ): Promise<Response | null> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await fetch(url, init);
+      const res = await fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
       // 429/403/503 suelen ser rate-limit/WAF transitorio → reintentar.
       if (res.ok) return res;
       if (![429, 403, 503, 502, 500].includes(res.status) || attempt === retries) {
