@@ -11,8 +11,10 @@ import { boeAdapter } from "./boe";
 import { bocCantabriaAdapter } from "./boc_cantabria";
 import { boibAdapter } from "./boib";
 import { bojaAdapter } from "./boja";
+import { bopAvilaAdapter } from "./bop_avila";
 import { bopCordobaAdapter } from "./bop_cordoba";
 import { bopJaenAdapter } from "./bop_jaen";
+import { bopOurenseAdapter } from "./bop_ourense";
 import { bopaAdapter } from "./bopa";
 import { docmAdapter } from "./docm";
 import { doeAdapter } from "./doe";
@@ -52,6 +54,8 @@ export const ADAPTERS: SourceAdapter[] = [
   boibAdapter,
   bopCordobaAdapter,
   bopJaenAdapter,
+  bopAvilaAdapter,
+  bopOurenseAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {

@@ -98,6 +98,8 @@ const BOP_ENABLED = new Set<string>([
   "46", // Valencia
   "14", // Córdoba
   "23", // Jaén
+  "05", // Ávila
+  "32", // Ourense
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
