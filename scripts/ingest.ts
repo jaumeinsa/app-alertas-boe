@@ -120,6 +120,10 @@ async function main() {
   const raw = process.argv.slice(2);
   await ensureSources();
 
+  // Pausa opcional entre días (ms) para fuentes con WAF sensible al ritmo
+  // (el Radware del BORM pone la IP en cuarentena si el backfill va seguido).
+  const dayDelay = parseInt(process.env.INGEST_DAY_DELAY_MS ?? "0", 10) || 0;
+
   // Modo rango de fechas: `ingest.ts 2020-01-01 2020-12-31` (ascendente, inclusivo).
   // Pensado para el backfill histórico.
   if (raw[0] && DATE_RE.test(raw[0])) {
@@ -127,6 +131,7 @@ async function main() {
     const end = raw[1] && DATE_RE.test(raw[1]) ? parseDate(raw[1]) : start;
     for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
       await ingestDate(new Date(d));
+      if (dayDelay > 0) await new Promise((r) => setTimeout(r, dayDelay));
     }
     return;
   }
