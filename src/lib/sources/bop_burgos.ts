@@ -6,10 +6,7 @@
  *   Fecha→nº: /hemeroteca/YYYY-MM-DD (HTML) → código bopbur-YYYY-NNN.
  *   PDF día:  /sites/default/files/private/publicado/bopbur-YYYY-NNN/bopbur-YYYY-NNN.pdf
  * externalId = bopbur-YYYY-NNN.
- *
- * ⚠️ DESACTIVADO: el servidor usa un TLS legacy que el OpenSSL de Node rechaza
- * (ERR_SSL_UNSUPPORTED_PROTOCOL) incluso con minVersion TLSv1; curl -k sí lo
- * negocia. Requiere shell-out a curl. Pendiente.
+ * (TLS legacy: el helper `insecure` baja SECLEVEL para poder conectar.)
  */
 
 import {
@@ -26,7 +23,7 @@ export const bopBurgosAdapter: SourceAdapter = {
   code: "BOP_09",
   name: "Boletín Oficial de la Provincia de Burgos",
   type: "BOP",
-  enabled: false, // TLS legacy no soportado por Node; pendiente shell-out a curl
+  enabled: true,
 
   async fetchByDate(date: Date): Promise<NormalizedPublication[]> {
     const html = await fetchText(`${BASE}/hemeroteca/${isoDate(date)}`, {

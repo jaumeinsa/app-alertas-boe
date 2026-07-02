@@ -68,7 +68,15 @@ let _insecureDispatcher: unknown = null;
 async function insecureDispatcher(): Promise<unknown> {
   if (!_insecureDispatcher) {
     const { Agent } = await import("undici");
-    _insecureDispatcher = new Agent({ connect: { rejectUnauthorized: false } });
+    // rejectUnauthorized:false para cert roto; minVersion+SECLEVEL=0 para TLS
+    // legacy (sedes viejas que Node rechaza con ERR_SSL_UNSUPPORTED_PROTOCOL).
+    _insecureDispatcher = new Agent({
+      connect: {
+        rejectUnauthorized: false,
+        minVersion: "TLSv1",
+        ciphers: "DEFAULT@SECLEVEL=0",
+      },
+    });
   }
   return _insecureDispatcher;
 }
