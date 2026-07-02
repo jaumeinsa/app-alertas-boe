@@ -12,6 +12,7 @@ import { bocCantabriaAdapter } from "./boc_cantabria";
 import { boibAdapter } from "./boib";
 import { bojaAdapter } from "./boja";
 import { bopACorunaAdapter } from "./bop_acoruna";
+import { bopAlicanteAdapter } from "./bop_alicante";
 import { bopAvilaAdapter } from "./bop_avila";
 import { bopBarcelonaAdapter } from "./bop_barcelona";
 import { bopBurgosAdapter } from "./bop_burgos";
@@ -86,6 +87,7 @@ export const ADAPTERS: SourceAdapter[] = [
   bopGironaAdapter,
   bopPalenciaAdapter,
   bopZamoraAdapter,
+  bopAlicanteAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
