@@ -107,6 +107,9 @@ const BOP_ENABLED = new Set<string>([
   "47", // Valladolid
   "37", // Salamanca
   "20", // Gipuzkoa
+  "35", // Las Palmas
+  "38", // Santa Cruz de Tenerife
+  "27", // Lugo
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
