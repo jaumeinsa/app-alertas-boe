@@ -100,6 +100,8 @@ const BOP_ENABLED = new Set<string>([
   "23", // Jaén
   "05", // Ávila
   "32", // Ourense
+  "15", // A Coruña
+  "36", // Pontevedra
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
