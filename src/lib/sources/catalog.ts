@@ -106,6 +106,7 @@ const BOP_ENABLED = new Set<string>([
   "13", // Ciudad Real
   "47", // Valladolid
   "37", // Salamanca
+  "20", // Gipuzkoa
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
