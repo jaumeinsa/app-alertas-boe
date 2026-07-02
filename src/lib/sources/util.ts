@@ -56,9 +56,22 @@ interface FetchOpts {
   charset?: string;
   /** Reintentos ante bloqueo/red (WAF, 429/403/503). Por defecto 2. */
   retries?: number;
+  /** Saltar validación TLS (sedes con cadena de certificado incompleta: Ciudad Real, Zamora, Burgos...). */
+  insecure?: boolean;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Dispatcher que NO valida el certificado TLS, para sedes con cadena rota
+// (Node rechaza con UNABLE_TO_VERIFY_LEAF_SIGNATURE; curl las acepta).
+let _insecureDispatcher: unknown = null;
+async function insecureDispatcher(): Promise<unknown> {
+  if (!_insecureDispatcher) {
+    const { Agent } = await import("undici");
+    _insecureDispatcher = new Agent({ connect: { rejectUnauthorized: false } });
+  }
+  return _insecureDispatcher;
+}
 
 // Timeout por intento. CRÍTICO: fetch de Node no tiene timeout por defecto, y
 // una conexión colgada (sede que acepta y no responde) bloqueaba el backfill
@@ -71,15 +84,20 @@ const FETCH_TIMEOUT_MS = Math.max(
 /** Fetch con reintentos, backoff y timeout ante errores transitorios o WAF. */
 async function fetchRetry(
   url: string,
-  init: RequestInit,
+  init: RequestInit & { dispatcher?: unknown },
   retries: number
 ): Promise<Response | null> {
+  // Con dispatcher (TLS-laxo) hay que usar el fetch de undici: el fetch global
+  // de Node no reconoce un Dispatcher de otra versión de undici.
+  const doFetch = init.dispatcher
+    ? ((await import("undici")).fetch as unknown as typeof fetch)
+    : fetch;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await fetch(url, {
+      const res = await doFetch(url, {
         ...init,
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      });
+      } as RequestInit);
       // 429/403/503 suelen ser rate-limit/WAF transitorio → reintentar.
       if (res.ok) return res;
       if (![429, 403, 503, 502, 500].includes(res.status) || attempt === retries) {
@@ -99,20 +117,30 @@ const ACCEPT_LANG = "es-ES,es;q=0.9,en;q=0.8";
 const ACCEPT_HTML =
   "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
 
+/** Construye el init con cabeceras de navegador y, si opts.insecure, el dispatcher TLS-laxo. */
+async function buildInit(
+  accept: string,
+  opts: FetchOpts
+): Promise<RequestInit & { dispatcher?: unknown }> {
+  const init: RequestInit & { dispatcher?: unknown } = {
+    headers: {
+      Accept: accept,
+      "Accept-Language": ACCEPT_LANG,
+      "User-Agent": UA,
+      ...opts.headers,
+    },
+  };
+  if (opts.insecure) init.dispatcher = await insecureDispatcher();
+  return init;
+}
+
 export async function fetchJson(
   url: string,
   opts: FetchOpts = {}
 ): Promise<unknown | null> {
   const res = await fetchRetry(
     url,
-    {
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Accept-Language": ACCEPT_LANG,
-        "User-Agent": UA,
-        ...opts.headers,
-      },
-    },
+    await buildInit("application/json, text/plain, */*", opts),
     opts.retries ?? 2
   );
   if (!res) return null;
@@ -129,14 +157,7 @@ export async function fetchText(
 ): Promise<string | null> {
   const res = await fetchRetry(
     url,
-    {
-      headers: {
-        Accept: ACCEPT_HTML,
-        "Accept-Language": ACCEPT_LANG,
-        "User-Agent": UA,
-        ...opts.headers,
-      },
-    },
+    await buildInit(ACCEPT_HTML, opts),
     opts.retries ?? 2
   );
   if (!res) return null;
@@ -158,14 +179,7 @@ export async function fetchBuffer(
 ): Promise<Buffer | null> {
   const res = await fetchRetry(
     url,
-    {
-      headers: {
-        Accept: "application/pdf,application/octet-stream,*/*",
-        "Accept-Language": ACCEPT_LANG,
-        "User-Agent": UA,
-        ...opts.headers,
-      },
-    },
+    await buildInit("application/pdf,application/octet-stream,*/*", opts),
     opts.retries ?? 2
   );
   if (!res) return null;

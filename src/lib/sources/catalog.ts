@@ -102,6 +102,8 @@ const BOP_ENABLED = new Set<string>([
   "32", // Ourense
   "15", // A Coruña
   "36", // Pontevedra
+  "45", // Toledo
+  "13", // Ciudad Real
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
