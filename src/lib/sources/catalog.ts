@@ -104,6 +104,8 @@ const BOP_ENABLED = new Set<string>([
   "36", // Pontevedra
   "45", // Toledo
   "13", // Ciudad Real
+  "47", // Valladolid
+  "37", // Salamanca
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */

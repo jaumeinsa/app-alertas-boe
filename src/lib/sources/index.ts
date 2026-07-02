@@ -18,7 +18,9 @@ import { bopCordobaAdapter } from "./bop_cordoba";
 import { bopJaenAdapter } from "./bop_jaen";
 import { bopOurenseAdapter } from "./bop_ourense";
 import { bopPontevedraAdapter } from "./bop_pontevedra";
+import { bopSalamancaAdapter } from "./bop_salamanca";
 import { bopToledoAdapter } from "./bop_toledo";
+import { bopValladolidAdapter } from "./bop_valladolid";
 import { bopaAdapter } from "./bopa";
 import { docmAdapter } from "./docm";
 import { doeAdapter } from "./doe";
@@ -64,6 +66,8 @@ export const ADAPTERS: SourceAdapter[] = [
   bopPontevedraAdapter,
   bopToledoAdapter,
   bopCiudadRealAdapter,
+  bopValladolidAdapter,
+  bopSalamancaAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
