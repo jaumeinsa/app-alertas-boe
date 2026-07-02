@@ -113,7 +113,7 @@ const BOP_ENABLED = new Set<string>([
   "44", // Teruel
   "09", // Burgos (TLS legacy vía insecure)
   "08", // Barcelona
-  // "17" Girona: adaptador escrito pero SIN PROBAR (test interrumpido) → activar tras probar
+  "17", // Girona (mapa numBop→fecha por año, cacheado)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */

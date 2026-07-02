@@ -66,9 +66,9 @@ export const bopGironaAdapter: SourceAdapter = {
   code: "BOP_17",
   name: "Butlletí Oficial de la Província de Girona",
   type: "BOP",
-  // ⚠️ SIN PROBAR end-to-end (test interrumpido). Probar 1 día (construye el
-  // mapa numBop→fecha del año, ~250 fetches) y activar.
-  enabled: false,
+  // Probado: 2025-06-16 → 58 docs. El mapa del año tarda ~10 min en construirse
+  // (una vez por año, cacheado; el backfill lo amortiza).
+  enabled: true,
 
   async fetchByDate(date: Date): Promise<NormalizedPublication[]> {
     const y = date.getUTCFullYear();
