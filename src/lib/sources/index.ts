@@ -23,6 +23,7 @@ import { bopGipuzkoaAdapter } from "./bop_gipuzkoa";
 import { bopGironaAdapter } from "./bop_girona";
 import { bopJaenAdapter } from "./bop_jaen";
 import { bopOurenseAdapter } from "./bop_ourense";
+import { bopPalenciaAdapter, bopZamoraAdapter } from "./bop_palencia_zamora";
 import { bopPontevedraAdapter } from "./bop_pontevedra";
 import { bopSalamancaAdapter } from "./bop_salamanca";
 import { bopTeruelAdapter } from "./bop_teruel";
@@ -83,6 +84,8 @@ export const ADAPTERS: SourceAdapter[] = [
   bopBurgosAdapter,
   bopBarcelonaAdapter,
   bopGironaAdapter,
+  bopPalenciaAdapter,
+  bopZamoraAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {

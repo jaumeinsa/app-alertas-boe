@@ -114,6 +114,8 @@ const BOP_ENABLED = new Set<string>([
   "09", // Burgos (TLS legacy vía insecure)
   "08", // Barcelona
   "17", // Girona (mapa numBop→fecha por año, cacheado)
+  "34", // Palencia (día-PDF, NN por sondeo)
+  "49", // Zamora (día-PDF, NN por sondeo, insecure)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
