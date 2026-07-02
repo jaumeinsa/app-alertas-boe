@@ -1,12 +1,15 @@
 import Link from "next/link";
 import AltaForm from "@/components/AltaForm";
 import { CONSENT_TEXT } from "@/lib/consent";
-import { INK, CREAM, CORAL, WHITE, DISPLAY, BRAND, SERIF } from "@/lib/theme";
+import { getSessionUser } from "@/lib/auth";
+import { INK, CREAM, BLUE, CORAL, WHITE, DISPLAY, BRAND, SERIF } from "@/lib/theme";
 
 export const metadata = {
   title: "Activar vigilancia",
   description: "Da de alta tu nombre para vigilar los boletines oficiales.",
 };
+
+export const dynamic = "force-dynamic";
 
 function Logo() {
   return (
@@ -20,7 +23,14 @@ function Logo() {
   );
 }
 
-export default function AltaPage() {
+export default async function AltaPage({
+  searchParams,
+}: {
+  searchParams: { bienvenida?: string };
+}) {
+  const user = await getSessionUser();
+  const bienvenida = searchParams.bienvenida === "1";
+
   return (
     <main style={{ background: CREAM, minHeight: "100vh", color: INK }}>
       <div style={{ maxWidth: 560, margin: "0 auto", padding: "32px 22px 64px" }}>
@@ -28,6 +38,23 @@ export default function AltaPage() {
           <Logo />
           <span style={{ fontFamily: BRAND, fontWeight: 800, fontSize: 19 }}>Notifikado</span>
         </Link>
+
+        {bienvenida && (
+          <div
+            style={{
+              marginTop: 24,
+              background: "rgba(44,91,208,.08)",
+              border: `1px solid ${BLUE}`,
+              borderRadius: 14,
+              padding: "14px 18px",
+              fontSize: 14.5,
+              lineHeight: 1.5,
+            }}
+          >
+            <strong style={{ color: BLUE }}>✓ Pago confirmado.</strong> Tu suscripción está
+            activa. Último paso: dinos qué nombre quieres vigilar.
+          </div>
+        )}
 
         <h1
           style={{
@@ -54,14 +81,25 @@ export default function AltaPage() {
             boxShadow: "0 18px 44px -30px rgba(44,91,208,.5)",
           }}
         >
-          <AltaForm consentText={CONSENT_TEXT} />
+          <AltaForm consentText={CONSENT_TEXT} initialEmail={user?.email} />
         </div>
 
         <p style={{ marginTop: 20, fontSize: 13.5, color: "rgba(34,56,107,.6)", textAlign: "center" }}>
-          ¿Ya tienes cuenta?{" "}
-          <Link href="/login" style={{ color: INK, fontWeight: 600 }}>
-            Entrar
-          </Link>
+          {user ? (
+            <>
+              Sesión iniciada como <strong>{user.email}</strong> ·{" "}
+              <Link href="/dashboard" style={{ color: INK, fontWeight: 600 }}>
+                Ir a mi panel
+              </Link>
+            </>
+          ) : (
+            <>
+              ¿Ya tienes cuenta?{" "}
+              <Link href="/login" style={{ color: INK, fontWeight: 600 }}>
+                Entrar
+              </Link>
+            </>
+          )}
         </p>
       </div>
     </main>

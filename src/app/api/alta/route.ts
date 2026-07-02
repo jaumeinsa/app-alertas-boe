@@ -64,7 +64,23 @@ export async function POST(req: NextRequest) {
       consentAt: new Date(),
       consentVersion: CONSENT_VERSION,
     },
+    include: { subscription: true },
   });
+
+  // Límite de nombres vigilados según el plan (1 si aún no hay suscripción).
+  const maxProfiles = user.subscription?.maxProfiles ?? 1;
+  const profileCount = await prisma.monitoredProfile.count({ where: { userId: user.id } });
+  if (profileCount >= maxProfiles) {
+    return NextResponse.json(
+      {
+        error:
+          maxProfiles === 1
+            ? "Ya tienes un nombre vigilado con este email. El plan Familiar permite hasta 5."
+            : `Tu plan permite ${maxProfiles} nombres vigilados y ya los tienes todos en uso.`,
+      },
+      { status: 403 }
+    );
+  }
 
   // Perfil monitorizado.
   const profile = await prisma.monitoredProfile.create({

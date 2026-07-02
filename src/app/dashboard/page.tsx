@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import MatchActions from "@/components/MatchActions";
+import NotifyPrefs from "@/components/NotifyPrefs";
 import RescanButton from "@/components/RescanButton";
 import {
   INK,
@@ -40,7 +41,26 @@ function fmtDate(d: Date): string {
   });
 }
 
-export default async function DashboardPage() {
+const PLAN_LABEL: Record<string, string> = {
+  TRIAL: "Prueba",
+  MONTHLY: "Personal",
+  YEARLY: "Anual",
+  FAMILY: "Familiar",
+};
+
+const STATUS_LABEL: Record<string, { text: string; ok: boolean }> = {
+  ACTIVE: { text: "activa", ok: true },
+  TRIALING: { text: "en prueba", ok: true },
+  PAST_DUE: { text: "pago pendiente", ok: false },
+  CANCELED: { text: "cancelada", ok: false },
+  INCOMPLETE: { text: "incompleta", ok: false },
+};
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { pago?: string };
+}) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
@@ -48,6 +68,11 @@ export default async function DashboardPage() {
     where: { userId: user.id },
     orderBy: { createdAt: "asc" },
   });
+
+  const subscription = await prisma.subscription.findUnique({
+    where: { userId: user.id },
+  });
+  const subStatus = subscription ? STATUS_LABEL[subscription.status] : null;
 
   const matches = await prisma.match.findMany({
     where: { profile: { userId: user.id }, status: { not: "DISMISSED" } },
@@ -96,6 +121,80 @@ export default async function DashboardPage() {
       </header>
 
       <div style={{ maxWidth: 920, margin: "0 auto", padding: "32px 22px 64px" }}>
+        {/* Confirmación de pago (llegada desde Stripe) */}
+        {searchParams.pago === "ok" && (
+          <div
+            style={{
+              background: "rgba(44,91,208,.08)",
+              border: `1px solid ${BLUE}`,
+              borderRadius: 14,
+              padding: "13px 18px",
+              fontSize: 14.5,
+              marginBottom: 22,
+            }}
+          >
+            <strong style={{ color: BLUE }}>✓ Pago confirmado.</strong> Tu suscripción está activa.
+          </div>
+        )}
+
+        {/* Estado de la suscripción */}
+        {subscription && subStatus ? (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: 10,
+              fontSize: 13.5,
+              marginBottom: 22,
+              color: "rgba(34,56,107,.7)",
+            }}
+          >
+            <span
+              style={{
+                background: subStatus.ok ? BLUE_SOFT : "rgba(232,85,45,.12)",
+                color: subStatus.ok ? BLUE : CORAL,
+                borderRadius: 100,
+                padding: "4px 12px",
+                fontWeight: 700,
+                fontFamily: MONO,
+                fontSize: 11.5,
+              }}
+            >
+              Plan {PLAN_LABEL[subscription.plan] ?? subscription.plan} · {subStatus.text}
+            </span>
+            {subscription.currentPeriodEnd && subStatus.ok && (
+              <span>Se renueva el {fmtDate(subscription.currentPeriodEnd)}</span>
+            )}
+            {!subStatus.ok && (
+              <a href="/#precios" style={{ color: BLUE, fontWeight: 600, textDecoration: "none" }}>
+                Reactivar suscripción →
+              </a>
+            )}
+          </div>
+        ) : (
+          <div
+            style={{
+              background: "rgba(232,85,45,.08)",
+              border: "1px solid rgba(232,85,45,.3)",
+              borderRadius: 14,
+              padding: "13px 18px",
+              fontSize: 14,
+              marginBottom: 22,
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 10,
+            }}
+          >
+            <span>Tu cuenta aún no tiene una suscripción activa.</span>
+            <a href="/#precios" style={{ color: BLUE, fontWeight: 700, textDecoration: "none" }}>
+              Elegir plan →
+            </a>
+          </div>
+        )}
+
         {/* Resumen */}
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 16, marginBottom: 26 }}>
           <div>
@@ -129,6 +228,25 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+
+        {/* Preferencias de aviso */}
+        <div style={{ marginBottom: 28 }}>
+          <NotifyPrefs
+            email={user.email}
+            initialNotifyEmail={user.notifyEmail}
+            initialNotifyWhatsapp={user.notifyWhatsapp}
+            initialPhone={user.phone}
+          />
+        </div>
+
+        {/* Añadir otro nombre si el plan lo permite */}
+        {subscription && profiles.length < subscription.maxProfiles && (
+          <div style={{ marginBottom: 28, fontSize: 14 }}>
+            <Link href="/alta" style={{ color: BLUE, fontWeight: 600, textDecoration: "none" }}>
+              ＋ Vigilar otro nombre ({profiles.length}/{subscription.maxProfiles} en uso)
+            </Link>
+          </div>
+        )}
 
         {/* Lista de coincidencias */}
         {matches.length === 0 ? (

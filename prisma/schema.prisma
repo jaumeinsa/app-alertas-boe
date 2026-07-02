@@ -25,6 +25,10 @@ model User {
   consentAt      DateTime?
   consentVersion String?
 
+  // Preferencias de aviso (el canal WhatsApp es fase 2; se guarda la intención).
+  notifyEmail    Boolean @default(true)
+  notifyWhatsapp Boolean @default(false)
+
   stripeCustomerId String? @unique
 
   // Tokens de login sin contraseña (magic-link).

@@ -30,11 +30,17 @@ const input: React.CSSProperties = {
   background: WHITE,
 };
 
-export default function AltaForm({ consentText }: { consentText: string }) {
+export default function AltaForm({
+  consentText,
+  initialEmail,
+}: {
+  consentText: string;
+  initialEmail?: string | null;
+}) {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [idNumber, setIdNumber] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState("");
   const [provincia, setProvincia] = useState("");
   const [consent, setConsent] = useState(false);

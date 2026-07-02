@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createLoginToken } from "@/lib/auth";
 import { sendEmail } from "@/lib/mail";
+import { magicLinkEmail } from "@/lib/emails";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://notifikado.com";
 
@@ -14,11 +15,8 @@ export async function POST(req: NextRequest) {
   const { token } = await createLoginToken(email);
   const link = `${APP_URL}/api/auth/verify?token=${token}`;
 
-  const mail = await sendEmail({
-    to: email,
-    subject: "Tu enlace de acceso a Notifikado",
-    html: `<p>Hola,</p><p>Pulsa este enlace para entrar en tu panel de Notifikado (caduca en 30 minutos):</p><p><a href="${link}">Entrar en Notifikado</a></p><p>Si no has solicitado esto, ignora este mensaje.</p>`,
-  });
+  const tpl = magicLinkEmail(link);
+  const mail = await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
 
   // Si el email no está configurado todavía, devolvemos el enlace para no
   // bloquear las pruebas (solo en ese caso).

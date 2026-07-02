@@ -113,12 +113,17 @@ function Nav() {
           <a href="#precios" style={{ textDecoration: "none", color: INK, opacity: 0.72 }}>Precios</a>
           <a href="#faq" style={{ textDecoration: "none", color: INK, opacity: 0.72 }}>Preguntas</a>
         </div>
-        <a
-          href={PRICING}
-          style={{ textDecoration: "none", background: BLUE, color: "#fff", fontWeight: 600, fontSize: 15, padding: "11px 20px", borderRadius: 100 }}
-        >
-          Empezar
-        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <Link href="/login" style={{ textDecoration: "none", color: INK, fontWeight: 600, fontSize: 15 }}>
+            Entrar
+          </Link>
+          <a
+            href={PRICING}
+            style={{ textDecoration: "none", background: BLUE, color: "#fff", fontWeight: 600, fontSize: 15, padding: "11px 20px", borderRadius: 100 }}
+          >
+            Empezar
+          </a>
+        </div>
       </nav>
     </header>
   );
@@ -446,8 +451,8 @@ function Footer() {
         </div>
         <span style={{ fontSize: 13, color: "rgba(243,239,228,.55)", fontFamily: MONO }}>© 2026 · Vigilancia de boletines oficiales · RGPD</span>
         <div style={{ display: "flex", gap: 20, fontSize: 14 }}>
-          <a href="#" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Privacidad</a>
-          <a href="#" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Términos</a>
+          <a href="/login" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Entrar</a>
+          <a href="/privacidad" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Privacidad</a>
         </div>
       </div>
     </footer>
