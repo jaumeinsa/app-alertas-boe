@@ -18,7 +18,18 @@ export interface NotifySummary {
 
 export async function notifyNewMatches(): Promise<NotifySummary> {
   const pending = await prisma.match.findMany({
-    where: { status: "NEW", profile: { user: { notifyEmail: true } } },
+    where: {
+      status: "NEW",
+      profile: {
+        user: {
+          notifyEmail: true,
+          // Solo avisamos a cuentas con suscripción vigente (o en gracia por
+          // impago). Las cuentas sin plan ven sus coincidencias en el panel
+          // pero no reciben emails.
+          subscription: { is: { status: { in: ["ACTIVE", "TRIALING", "PAST_DUE"] } } },
+        },
+      },
+    },
     include: {
       publication: { include: { source: true } },
       profile: { include: { user: true } },

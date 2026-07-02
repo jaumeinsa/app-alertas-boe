@@ -18,7 +18,13 @@ export async function POST(req: NextRequest) {
   const tpl = magicLinkEmail(link);
   const mail = await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
 
-  // Si el email no está configurado todavía, devolvemos el enlace para no
-  // bloquear las pruebas (solo en ese caso).
-  return NextResponse.json({ ok: true, emailed: mail.sent, devLink: mail.sent ? undefined : link });
+  // devLink SOLO cuando Resend no está configurado en absoluto (entorno de
+  // pruebas). Si Resend está configurado pero el envío falla, NUNCA se filtra
+  // el enlace al navegador: daría acceso a la cuenta de cualquier email.
+  const resendConfigured = Boolean(process.env.RESEND_API_KEY?.trim());
+  return NextResponse.json({
+    ok: true,
+    emailed: mail.sent,
+    devLink: !resendConfigured && !mail.sent ? link : undefined,
+  });
 }

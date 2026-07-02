@@ -70,7 +70,9 @@ async function main() {
     "expand[]": "data.customer",
   });
   let synced = 0;
-  for (const raw of ((subs.data as Record<string, unknown>[]) ?? [])) {
+  // Stripe lista de más nueva a más vieja; procesamos en orden cronológico
+  // para que, si un email tiene varias, la más reciente quede en la BD.
+  for (const raw of ((subs.data as Record<string, unknown>[]) ?? []).slice().reverse()) {
     const sub = normalizeSubscription(raw);
     if (!sub.email) {
       console.log(`— suscripción ${sub.id} sin email de cliente; la salto`);

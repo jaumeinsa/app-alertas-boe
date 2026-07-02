@@ -90,8 +90,12 @@ export async function POST(req: NextRequest) {
         typeof object.subscription === "string"
           ? object.subscription
           : ((object.subscription as { id?: string } | null)?.id ?? null);
+      // Con métodos de pago asíncronos la sesión llega sin cobro confirmado:
+      // no dar de alta ni felicitar hasta que el pago esté realmente hecho.
+      const paymentStatus = object.payment_status as string | undefined;
+      const paid = paymentStatus === "paid" || paymentStatus === "no_payment_required";
 
-      if (email && subscriptionId) {
+      if (email && subscriptionId && paid) {
         const sub = normalizeSubscription(await getSubscription(subscriptionId));
         if (!sub.customerId && typeof object.customer === "string") {
           sub.customerId = object.customer;
@@ -103,7 +107,12 @@ export async function POST(req: NextRequest) {
         const { token } = await createLoginToken(email.trim().toLowerCase());
         const link = `${APP_URL}/api/auth/verify?token=${token}`;
         const mail = welcomeEmail(link, PLAN_LABEL[sub.plan] ?? sub.plan);
-        await sendEmail({ to: email, subject: mail.subject, html: mail.html });
+        const sent = await sendEmail({ to: email, subject: mail.subject, html: mail.html });
+        if (!sent.sent) {
+          // El alta ya está hecha (idempotente); solo queda constancia del fallo
+          // de la bienvenida. El usuario puede entrar igualmente vía /login.
+          console.error(`[stripe] bienvenida NO enviada a ${email}: ${sent.reason}`);
+        }
         console.log(`[stripe] checkout completado: user=${userId} plan=${sub.plan}`);
       }
     } else if (type === "customer.subscription.updated" || type === "customer.subscription.deleted") {

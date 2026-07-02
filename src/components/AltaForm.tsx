@@ -46,10 +46,12 @@ export default function AltaForm({
   const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setInfo(null);
     setLoading(true);
     try {
       const res = await fetch("/api/alta", {
@@ -65,6 +67,13 @@ export default function AltaForm({
         }),
       });
       const data = await res.json();
+      if (res.status === 409 && data.accountExists) {
+        setInfo(
+          "Este email ya tiene una cuenta en Notifikado. Te hemos enviado un enlace de acceso al correo: entra con él y añade el nombre desde tu panel."
+        );
+        setLoading(false);
+        return;
+      }
       if (!res.ok) throw new Error(data.error ?? "No se pudo completar el alta.");
       router.push(data.redirect ?? "/dashboard");
     } catch (err) {
@@ -185,6 +194,22 @@ export default function AltaForm({
           }}
         >
           {error}
+        </p>
+      )}
+      {info && (
+        <p
+          style={{
+            margin: 0,
+            background: BLUE_SOFT,
+            border: "1px solid rgba(44,91,208,.3)",
+            color: INK,
+            borderRadius: 10,
+            padding: "10px 13px",
+            fontSize: 13.5,
+            lineHeight: 1.5,
+          }}
+        >
+          {info}
         </p>
       )}
 

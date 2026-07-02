@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { setSessionCookie } from "@/lib/auth";
+import { createLoginToken, getSessionUser, setSessionCookie } from "@/lib/auth";
 import { CONSENT_VERSION } from "@/lib/consent";
 import { detectIdType, idSuffix, isValidDniNie, kindForIdType } from "@/lib/ids";
 import { nameSearchKey } from "@/lib/matching/normalize";
 import { tokenizeName } from "@/lib/matching/normalize";
+import { magicLinkEmail } from "@/lib/emails";
+import { sendEmail } from "@/lib/mail";
 import { scanProfile } from "@/lib/scan";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://notifikado.com";
 
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
@@ -54,18 +58,46 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Usuario (upsert por email) + consentimiento.
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: { phone, consentAt: new Date(), consentVersion: CONSENT_VERSION },
-    create: {
-      email,
-      phone,
-      consentAt: new Date(),
-      consentVersion: CONSENT_VERSION,
-    },
-    include: { subscription: true },
-  });
+  // Resolución de la cuenta (anti-secuestro): el email del formulario NUNCA
+  // da acceso a una cuenta existente sin demostrar su propiedad.
+  const sessionUser = await getSessionUser();
+  let user;
+  if (sessionUser) {
+    // Con sesión iniciada, el alta añade el perfil a ESA cuenta; el email del
+    // formulario no puede cambiarla.
+    user = await prisma.user.update({
+      where: { id: sessionUser.id },
+      data: {
+        ...(phone ? { phone } : {}),
+        consentAt: new Date(),
+        consentVersion: CONSENT_VERSION,
+      },
+      include: { subscription: true },
+    });
+  } else {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      // La cuenta ya existe y quien envía el formulario no ha demostrado ser
+      // su dueño: le mandamos un enlace de acceso a SU correo y no tocamos nada.
+      const { token } = await createLoginToken(email);
+      const link = `${APP_URL}/api/auth/verify?token=${token}`;
+      const tpl = magicLinkEmail(link);
+      const mail = await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
+      return NextResponse.json(
+        { accountExists: true, emailed: mail.sent },
+        { status: 409 }
+      );
+    }
+    user = await prisma.user.create({
+      data: {
+        email,
+        phone,
+        consentAt: new Date(),
+        consentVersion: CONSENT_VERSION,
+      },
+      include: { subscription: true },
+    });
+  }
 
   // Límite de nombres vigilados según el plan (1 si aún no hay suscripción).
   const maxProfiles = user.subscription?.maxProfiles ?? 1;

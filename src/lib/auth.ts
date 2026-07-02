@@ -9,12 +9,23 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 
 const COOKIE = "nk_session";
-const SECRET = process.env.AUTH_SECRET ?? "dev-insecure-secret-change-me";
 const MAX_AGE = 60 * 60 * 24 * 60; // 60 días
 const TOKEN_TTL_MS = 1000 * 60 * 30; // 30 min para el magic-link
 
+/** Secreto de firma. En producción es OBLIGATORIO (un valor por defecto
+ *  conocido permitiría falsificar cookies de sesión). Lazy para no romper
+ *  el `next build` (que corre sin .env). */
+function getSecret(): string {
+  const s = process.env.AUTH_SECRET?.trim();
+  if (s) return s;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SECRET no configurada en producción");
+  }
+  return "dev-insecure-secret-change-me";
+}
+
 function sign(data: string): string {
-  return crypto.createHmac("sha256", SECRET).update(data).digest("base64url");
+  return crypto.createHmac("sha256", getSecret()).update(data).digest("base64url");
 }
 
 export function createSessionToken(userId: string): string {

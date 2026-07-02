@@ -11,6 +11,16 @@ const CORAL = "#E8552D";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://notifikado.com";
 
+/** Escapa texto que se interpola en el HTML del email (títulos de boletines,
+ *  nombres de perfil...): son datos externos y no deben inyectar marcado. */
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function layout(title: string, bodyHtml: string): string {
   return `<!doctype html>
 <html lang="es">
@@ -65,7 +75,7 @@ export function welcomeEmail(link: string, planLabel: string): { subject: string
     subject: "Pago confirmado — activa tu vigilancia",
     html: layout(
       "¡Bienvenido a Notifikado!",
-      p(`Tu pago del plan <strong>${planLabel}</strong> se ha procesado correctamente.`) +
+      p(`Tu pago del plan <strong>${esc(planLabel)}</strong> se ha procesado correctamente.`) +
         p("Solo falta un paso: dinos qué nombre quieres vigilar para empezar a revisar los boletines oficiales cada día.") +
         button(link, "Configurar mi vigilancia") +
         muted("Este enlace de acceso caduca en 30 minutos. Si caduca, pide uno nuevo en notifikado.com/login con este mismo email."),
@@ -89,10 +99,10 @@ export function matchesEmail(items: MatchEmailItem[]): { subject: string; html: 
       (m) => `<tr>
         <td style="padding:12px 0;border-top:1px solid rgba(34,56,107,.1);">
           <div style="font-size:12px;color:rgba(34,56,107,.6);margin-bottom:4px;">
-            <strong style="color:${BLUE};">${m.sourceCode}</strong> · ${m.publishedAt.toLocaleDateString("es-ES")} · vigilando: ${m.profileName}
+            <strong style="color:${BLUE};">${esc(m.sourceCode)}</strong> · ${m.publishedAt.toLocaleDateString("es-ES")} · vigilando: ${esc(m.profileName)}
           </div>
-          <div style="font-size:14px;line-height:1.45;color:${INK};margin-bottom:6px;">${m.title}</div>
-          <a href="${m.url}" style="font-size:13px;color:${BLUE};font-weight:600;">Ver documento oficial →</a>
+          <div style="font-size:14px;line-height:1.45;color:${INK};margin-bottom:6px;">${esc(m.title)}</div>
+          <a href="${esc(m.url)}" style="font-size:13px;color:${BLUE};font-weight:600;">Ver documento oficial →</a>
         </td>
       </tr>`,
     )

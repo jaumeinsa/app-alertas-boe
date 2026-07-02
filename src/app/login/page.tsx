@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { INK, CREAM, BLUE, CORAL, WHITE, DISPLAY, BRAND } from "@/lib/theme";
 
@@ -10,6 +10,13 @@ export default function LoginPage() {
   const [devLink, setDevLink] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Aviso de enlace caducado (redirección desde /api/auth/verify).
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("error") === "expirado") {
+      setError("Ese enlace de acceso ya se usó o ha caducado. Pide uno nuevo aquí.");
+    }
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
