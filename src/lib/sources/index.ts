@@ -14,6 +14,11 @@ import { bojaAdapter } from "./boja";
 import { bopACorunaAdapter } from "./bop_acoruna";
 import { bopAlicanteAdapter } from "./bop_alicante";
 import { bopAvilaAdapter } from "./bop_avila";
+import { bopBadajozAdapter } from "./bop_badajoz";
+import { bopCaceresAdapter } from "./bop_caceres";
+import { bopMelillaAdapter } from "./bop_melilla";
+import { bopGranadaAdapter, bopSevillaAdapter } from "./bop_opencms";
+import { bopTarragonaAdapter } from "./bop_tarragona";
 import { bopBarcelonaAdapter } from "./bop_barcelona";
 import { bopBurgosAdapter } from "./bop_burgos";
 import { bopLasPalmasAdapter, bopTenerifeAdapter } from "./bop_canarias";
@@ -88,6 +93,12 @@ export const ADAPTERS: SourceAdapter[] = [
   bopPalenciaAdapter,
   bopZamoraAdapter,
   bopAlicanteAdapter,
+  bopGranadaAdapter,
+  bopSevillaAdapter,
+  bopBadajozAdapter,
+  bopCaceresAdapter,
+  bopMelillaAdapter,
+  bopTarragonaAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {

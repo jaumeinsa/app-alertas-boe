@@ -117,6 +117,12 @@ const BOP_ENABLED = new Set<string>([
   "34", // Palencia (día-PDF, NN por sondeo)
   "49", // Zamora (día-PDF, NN por sondeo, insecure)
   "03", // Alicante (API AJAX JSON + PDF insecure)
+  "18", // Granada (OpenCms moderno desde jul-2024 + día-PDF legado)
+  "41", // Sevilla (OpenCms moderno desde dic-2022 + día-PDF legado)
+  "06", // Badajoz (PHP clásico, texto HTML por anuncio)
+  "10", // Cáceres (API REST JSON, texto inline — fecha MM/DD/YYYY)
+  "52", // Melilla (BOME, calendario JSON + vista web HTML)
+  "43", // Tarragona (BOPT dipta.cat, paginado + PDF por anuncio)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
