@@ -110,6 +110,7 @@ const BOP_ENABLED = new Set<string>([
   "35", // Las Palmas
   "38", // Santa Cruz de Tenerife
   "27", // Lugo
+  "44", // Teruel
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
