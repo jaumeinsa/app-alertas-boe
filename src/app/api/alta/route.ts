@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { setSessionCookie } from "@/lib/auth";
 import { CONSENT_VERSION } from "@/lib/consent";
-import { detectIdType, idSuffix, isValidDniNie, kindForIdType, normalizeId } from "@/lib/ids";
+import { detectIdType, idSuffix, isValidDniNie, kindForIdType } from "@/lib/ids";
 import { nameSearchKey } from "@/lib/matching/normalize";
 import { tokenizeName } from "@/lib/matching/normalize";
 import { scanProfile } from "@/lib/scan";
@@ -88,8 +88,10 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       fullName,
       searchKey: nameSearchKey(fullName),
+      // Minimización RGPD: el documento completo NO se almacena; solo se usa
+      // aquí para validar la letra y derivar el sufijo con el que casan los
+      // boletines anonimizados ("***4567**").
       idType,
-      fullDni: normalizeId(idNumberRaw),
       dniSuffix: idSuffix(idNumberRaw),
       provinces,
       kind: kindForIdType(idType),

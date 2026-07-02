@@ -160,7 +160,11 @@ export default function AltaForm({
           required
         />
         <span style={{ fontSize: 13, lineHeight: 1.5, color: INK }}>
-          {consentText}{" "}
+          {consentText} Al activar la vigilancia acepto también las{" "}
+          <a href="/terminos" target="_blank" style={{ color: BLUE, fontWeight: 600 }}>
+            Condiciones del servicio
+          </a>{" "}
+          y la{" "}
           <a href="/privacidad" target="_blank" style={{ color: BLUE, fontWeight: 600 }}>
             Política de privacidad
           </a>

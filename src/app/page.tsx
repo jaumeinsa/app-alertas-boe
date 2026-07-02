@@ -453,6 +453,7 @@ function Footer() {
         <div style={{ display: "flex", gap: 20, fontSize: 14 }}>
           <a href="/login" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Entrar</a>
           <a href="/privacidad" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Privacidad</a>
+          <a href="/terminos" style={{ color: "rgba(243,239,228,.62)", textDecoration: "none" }}>Términos</a>
         </div>
       </div>
     </footer>

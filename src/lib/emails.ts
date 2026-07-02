@@ -28,6 +28,7 @@ function layout(title: string, bodyHtml: string): string {
         <tr><td style="padding:18px 4px 0;font-size:12px;line-height:1.5;color:rgba(34,56,107,.55);">
           Notifikado · vigilancia de boletines oficiales · <a href="${APP_URL}/privacidad" style="color:rgba(34,56,107,.55);">Privacidad</a><br>
           Recibes este correo porque tienes una cuenta en notifikado.com.
+          <a href="${APP_URL}/dashboard" style="color:rgba(34,56,107,.55);">Gestiona tus avisos o elimina tu cuenta</a> cuando quieras.
         </td></tr>
       </table>
     </td></tr>

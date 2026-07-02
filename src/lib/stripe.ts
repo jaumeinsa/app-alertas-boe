@@ -16,14 +16,14 @@ export function stripeKey(): string | null {
 }
 
 async function stripeRequest(
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "DELETE",
   path: string,
   params?: Record<string, string> | URLSearchParams
 ): Promise<Record<string, unknown>> {
   const key = stripeKey();
   if (!key) throw new Error("STRIPE_SECRET_KEY no configurada");
   const body = params ? new URLSearchParams(params).toString() : undefined;
-  const url = method === "GET" && body ? `${API}${path}?${body}` : `${API}${path}`;
+  const url = method !== "POST" && body ? `${API}${path}?${body}` : `${API}${path}`;
   const res = await fetch(url, {
     method,
     headers: {
@@ -155,4 +155,9 @@ export async function getCheckoutSession(sessionId: string) {
 
 export async function getSubscription(subscriptionId: string) {
   return stripeGet(`/subscriptions/${encodeURIComponent(subscriptionId)}`);
+}
+
+/** Cancela una suscripción en Stripe (baja inmediata de la renovación). */
+export async function cancelSubscription(subscriptionId: string) {
+  return stripeRequest("DELETE", `/subscriptions/${encodeURIComponent(subscriptionId)}`);
 }

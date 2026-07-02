@@ -104,7 +104,9 @@ model MonitoredProfile {
   // Filtros para reducir falsos positivos.
   idType     String? // "DNI" | "NIF" | "CIF"
   dniSuffix  String? // p.ej. "4567" → casa con BOE anonimizado "***4567**"
-  fullDni    String? // opcional, cifrado en reposo a nivel de app si se usa
+  // DEPRECADO (RGPD minimización): ya no se escribe; los valores se vaciaron en
+  // la migración 0005. Eliminar la columna cuando el worker esté reconstruido.
+  fullDni    String?
   birthYear  Int?
   provinces  String[] // ISO/INE de provincias de interés; vacío = todas
   aliases    String[] // nombres alternativos / antiguos / con segundo apellido

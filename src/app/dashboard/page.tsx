@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
+import DeleteAccount from "@/components/DeleteAccount";
 import MatchActions from "@/components/MatchActions";
 import NotifyPrefs from "@/components/NotifyPrefs";
 import RescanButton from "@/components/RescanButton";
@@ -313,6 +314,29 @@ export default async function DashboardPage({
             ))}
           </div>
         )}
+
+        {/* Pie: privacidad y supresión de cuenta (RGPD) */}
+        <div
+          style={{
+            marginTop: 42,
+            paddingTop: 22,
+            borderTop: "1px solid rgba(34,56,107,.12)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+            fontSize: 13,
+          }}
+        >
+          <div style={{ display: "flex", gap: 18 }}>
+            <Link href="/privacidad" style={{ color: "rgba(34,56,107,.6)", textDecoration: "none" }}>
+              Privacidad
+            </Link>
+            <Link href="/terminos" style={{ color: "rgba(34,56,107,.6)", textDecoration: "none" }}>
+              Condiciones del servicio
+            </Link>
+          </div>
+          <DeleteAccount />
+        </div>
       </div>
     </main>
   );
