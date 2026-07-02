@@ -6,6 +6,7 @@ import DeleteAccount from "@/components/DeleteAccount";
 import MatchActions from "@/components/MatchActions";
 import NotifyPrefs from "@/components/NotifyPrefs";
 import RescanButton from "@/components/RescanButton";
+import { isAdmin } from "@/lib/admin";
 import {
   INK,
   CREAM,
@@ -114,6 +115,11 @@ export default async function DashboardPage({
           </Link>
           <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 13.5 }}>
             <span style={{ color: "rgba(34,56,107,.6)" }}>{user.email}</span>
+            {isAdmin(user.email) && (
+              <Link href="/admin" style={{ color: BLUE, fontWeight: 700, textDecoration: "none" }}>
+                Admin
+              </Link>
+            )}
             <a href="/api/logout" style={{ color: INK, fontWeight: 600, textDecoration: "none" }}>
               Salir
             </a>
