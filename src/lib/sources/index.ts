@@ -13,6 +13,7 @@ import { boibAdapter } from "./boib";
 import { bojaAdapter } from "./boja";
 import { bopACorunaAdapter } from "./bop_acoruna";
 import { bopAvilaAdapter } from "./bop_avila";
+import { bopBurgosAdapter } from "./bop_burgos";
 import { bopLasPalmasAdapter, bopTenerifeAdapter } from "./bop_canarias";
 import { bopCiudadRealAdapter } from "./bop_ciudadreal";
 import { bopLugoAdapter } from "./bop_lugo";
@@ -77,6 +78,7 @@ export const ADAPTERS: SourceAdapter[] = [
   bopTenerifeAdapter,
   bopLugoAdapter,
   bopTeruelAdapter,
+  bopBurgosAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {

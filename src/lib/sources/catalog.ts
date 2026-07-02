@@ -111,6 +111,7 @@ const BOP_ENABLED = new Set<string>([
   "38", // Santa Cruz de Tenerife
   "27", // Lugo
   "44", // Teruel
+  // "09" Burgos: adaptador escrito pero desactivado (TLS legacy, pendiente shell-out curl)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
