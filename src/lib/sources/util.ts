@@ -58,6 +58,13 @@ interface FetchOpts {
   retries?: number;
   /** Saltar validación TLS (sedes con cadena de certificado incompleta: Ciudad Real, Zamora, Burgos...). */
   insecure?: boolean;
+  /** Método HTTP (por defecto GET). Algunos buscadores exigen POST (Huesca, Zaragoza). */
+  method?: "GET" | "POST";
+  /**
+   * Cuerpo para POST. Si es un objeto, se envía como
+   * application/x-www-form-urlencoded (formulario clásico de sede sin JS).
+   */
+  body?: string | Record<string, string>;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -130,14 +137,25 @@ async function buildInit(
   accept: string,
   opts: FetchOpts
 ): Promise<RequestInit & { dispatcher?: unknown }> {
-  const init: RequestInit & { dispatcher?: unknown } = {
-    headers: {
-      Accept: accept,
-      "Accept-Language": ACCEPT_LANG,
-      "User-Agent": UA,
-      ...opts.headers,
-    },
+  const headers: Record<string, string> = {
+    Accept: accept,
+    "Accept-Language": ACCEPT_LANG,
+    "User-Agent": UA,
+    ...opts.headers,
   };
+  const init: RequestInit & { dispatcher?: unknown } = { headers };
+  if (opts.method) init.method = opts.method;
+  if (opts.body !== undefined) {
+    if (typeof opts.body === "string") {
+      init.body = opts.body;
+    } else {
+      init.body = new URLSearchParams(opts.body).toString();
+      if (!headers["Content-Type"]) {
+        headers["Content-Type"] = "application/x-www-form-urlencoded";
+      }
+    }
+    if (!init.method) init.method = "POST";
+  }
   if (opts.insecure) init.dispatcher = await insecureDispatcher();
   return init;
 }

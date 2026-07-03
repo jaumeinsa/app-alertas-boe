@@ -123,6 +123,8 @@ const BOP_ENABLED = new Set<string>([
   "10", // Cáceres (API REST JSON, texto inline — fecha MM/DD/YYYY)
   "52", // Melilla (BOME, calendario JSON + vista web HTML)
   "43", // Tarragona (BOPT dipta.cat, paginado + PDF por anuncio)
+  "22", // Huesca (gnuBOP, POST buscador latin-1 + PDF por anuncio)
+  "50", // Zaragoza (Struts POST + texto HTML por edicto, insecure TLS; WAF corta datacenter → Mac-side)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */
