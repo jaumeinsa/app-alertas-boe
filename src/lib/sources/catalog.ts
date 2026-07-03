@@ -125,6 +125,19 @@ const BOP_ENABLED = new Set<string>([
   "43", // Tarragona (BOPT dipta.cat, paginado + PDF por anuncio)
   "22", // Huesca (gnuBOP, POST buscador latin-1 + PDF por anuncio)
   "50", // Zaragoza (Struts POST + texto HTML por edicto, insecure TLS; WAF corta datacenter → Mac-side)
+  "29", // Málaga (HTML por edicto, Referer obligatorio)
+  "11", // Cádiz (boletín PDF completo/día, insecure TLS)
+  "21", // Huelva (nuevo: POST ajax anuncio/anuncio; legacy <20-jun-2023: boletín PDF/día)
+  "42", // Soria (Pixelware, boletín PDF completo/día)
+  "16", // Cuenca (Liferay, boletín PDF completo/día)
+  "40", // Segovia (Liferay, boletín PDF completo/día)
+  "24", // León (OpenCms, boletín PDF completo/día)
+  "48", // Bizkaia (BOB, PDF por anuncio, resolvedor fecha→núm)
+  "01", // Álava (BOTHA, SGBO5001 por fecha + PDF por anuncio)
+  "25", // Lleida (eBOP, sumario + PDF por edicto)
+  "51", // Ceuta (BOCCE, jDownloads, boletín PDF completo)
+  "02", // Albacete (JSON base64 días publicación + anuncios PDF)
+  "19", // Guadalajara (Joomla K2, sumario + PDF por anuncio)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */

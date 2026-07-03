@@ -21,6 +21,19 @@ import { bopGranadaAdapter, bopSevillaAdapter } from "./bop_opencms";
 import { bopHuescaAdapter } from "./bop_huesca";
 import { bopTarragonaAdapter } from "./bop_tarragona";
 import { bopZaragozaAdapter } from "./bop_zaragoza";
+import { bopMalagaAdapter } from "./bop_malaga";
+import { bopCadizAdapter } from "./bop_cadiz";
+import { bopHuelvaAdapter } from "./bop_huelva";
+import { bopSoriaAdapter } from "./bop_soria";
+import { bopCuencaAdapter } from "./bop_cuenca";
+import { bopSegoviaAdapter } from "./bop_segovia";
+import { bopLeonAdapter } from "./bop_leon";
+import { bopBizkaiaAdapter } from "./bop_bizkaia";
+import { bopAlavaAdapter } from "./bop_alava";
+import { bopLleidaAdapter } from "./bop_lleida";
+import { bopCeutaAdapter } from "./bop_ceuta";
+import { bopAlbaceteAdapter } from "./bop_albacete";
+import { bopGuadalajaraAdapter } from "./bop_guadalajara";
 import { bopBarcelonaAdapter } from "./bop_barcelona";
 import { bopBurgosAdapter } from "./bop_burgos";
 import { bopLasPalmasAdapter, bopTenerifeAdapter } from "./bop_canarias";
@@ -103,6 +116,19 @@ export const ADAPTERS: SourceAdapter[] = [
   bopTarragonaAdapter,
   bopHuescaAdapter,
   bopZaragozaAdapter,
+  bopMalagaAdapter,
+  bopCadizAdapter,
+  bopHuelvaAdapter,
+  bopSoriaAdapter,
+  bopCuencaAdapter,
+  bopSegoviaAdapter,
+  bopLeonAdapter,
+  bopBizkaiaAdapter,
+  bopAlavaAdapter,
+  bopLleidaAdapter,
+  bopCeutaAdapter,
+  bopAlbaceteAdapter,
+  bopGuadalajaraAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
