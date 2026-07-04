@@ -138,6 +138,8 @@ const BOP_ENABLED = new Set<string>([
   "51", // Ceuta (BOCCE, jDownloads, boletín PDF completo)
   "02", // Albacete (JSON base64 días publicación + anuncios PDF)
   "19", // Guadalajara (Joomla K2, sumario + PDF por anuncio)
+  "12", // Castellón (JSF ViewState boletinesAntiguos, boletín PDF/día)
+  "04", // Almería (Pandora/GreenStone GET, boletín PDF/día)
 ]);
 
 /** Códigos de autonómicos con adaptador activo (los demás del catálogo siguen pendientes). */

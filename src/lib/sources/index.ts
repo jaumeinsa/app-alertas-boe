@@ -34,6 +34,8 @@ import { bopLleidaAdapter } from "./bop_lleida";
 import { bopCeutaAdapter } from "./bop_ceuta";
 import { bopAlbaceteAdapter } from "./bop_albacete";
 import { bopGuadalajaraAdapter } from "./bop_guadalajara";
+import { bopCastellonAdapter } from "./bop_castellon";
+import { bopAlmeriaAdapter } from "./bop_almeria";
 import { bopBarcelonaAdapter } from "./bop_barcelona";
 import { bopBurgosAdapter } from "./bop_burgos";
 import { bopLasPalmasAdapter, bopTenerifeAdapter } from "./bop_canarias";
@@ -129,6 +131,8 @@ export const ADAPTERS: SourceAdapter[] = [
   bopCeutaAdapter,
   bopAlbaceteAdapter,
   bopGuadalajaraAdapter,
+  bopCastellonAdapter,
+  bopAlmeriaAdapter,
 ];
 
 export function enabledAdapters(): SourceAdapter[] {
