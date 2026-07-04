@@ -8,7 +8,7 @@
  */
 
 import { inferActType, NormalizedPublication, SourceAdapter } from "./types";
-import { CONCURRENCY, MAX_BODY_CHARS, ddmmyyyy, fetchJson, fetchText, mapPool } from "./util";
+import { CONCURRENCY, MAX_BODY_CHARS, ddmmyyyy, fetchText, mapPool } from "./util";
 
 // El sumario exige Accept: application/json; el /txt devuelve 406 con ese
 // Accept y 200 (text/plain) sin él.
@@ -37,10 +37,26 @@ export const bormCcaaAdapter: SourceAdapter = {
 
   async fetchByDate(date: Date): Promise<NormalizedPublication[]> {
     const f = ddmmyyyy(date); // DD-MM-YYYY
-    const sumario = (await fetchJson(
+    // Pedimos el sumario como TEXTO para poder distinguir el JSON real del
+    // challenge anti-bot de Radware (HTML con `__uzdbm`), que llega con 200 y
+    // parecería "día sin boletín". Sin esta distinción un backfill puede dar
+    // un falso "completo" (le pasó a 2022/2024). Si detectamos el challenge,
+    // LANZAMOS para que la ingesta lo registre como fallo, no como día vacío.
+    const raw = await fetchText(
       `https://www.borm.es/services/boletin/fecha/${f}/sumario`,
       { headers: JSON_HEADERS }
-    )) as { anunciosBoletin?: BormAnuncio[] } | null;
+    );
+    if (raw == null) return []; // error de red puntual
+    const head = raw.trimStart().slice(0, 400).toLowerCase();
+    if (head.startsWith("<") || head.includes("uzdbm") || head.includes("incapsula")) {
+      throw new Error("BORM: challenge anti-bot Radware (WAF cerrado)");
+    }
+    let sumario: { anunciosBoletin?: BormAnuncio[] } | null = null;
+    try {
+      sumario = JSON.parse(raw);
+    } catch {
+      return []; // respuesta no-JSON no reconocible → tratar como día sin boletín
+    }
     const anuncios = sumario?.anunciosBoletin;
     if (!anuncios || anuncios.length === 0) return [];
 
