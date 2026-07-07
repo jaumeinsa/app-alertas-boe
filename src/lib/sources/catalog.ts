@@ -70,6 +70,11 @@ const PROVINCES: Array<[string, string]> = [
   ["48", "Bizkaia"],
   ["49", "Zamora"],
   ["50", "Zaragoza"],
+  // Ciudades autónomas: no son "provincias" pero tienen su propio boletín
+  // (BOCCE Ceuta, BOME Melilla). Sin estas entradas sus fuentes no se crean y
+  // el adaptador se salta en silencio.
+  ["51", "Ceuta"],
+  ["52", "Melilla"],
 ];
 
 /** Diarios oficiales autonómicos. */
