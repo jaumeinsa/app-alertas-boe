@@ -109,7 +109,15 @@ export const bopMalagaAdapter: SourceAdapter = {
   async fetchByDate(date: Date): Promise<NormalizedPublication[]> {
     const f = ddmmyyyy(date); // DD-MM-YYYY
     const html = await fetchText(`${BASE}/index.php?fecha=${f}`);
-    if (!html) return [];
+    // La sede throttlea peticiones seguidas: cuando lo hace, el índice del día
+    // NO llega (fetchText null tras reintentos). Un día SIN boletín sí devuelve
+    // HTML (con 0 edictos). Distinguirlos evita el falso "día vacío" que en un
+    // backfill masivo daría un falso "completo" (le pasó: 42 docs en vez de ~40k).
+    // Ante null lanzamos para que la ingesta lo registre como fallo y el backfill
+    // reintente el rango a menor ritmo, en vez de darlo por vacío.
+    if (html == null) {
+      throw new Error("BOP Málaga: índice del día no disponible (throttle/red)");
+    }
 
     const edictos = parseSumario(html);
     if (edictos.length === 0) return [];
