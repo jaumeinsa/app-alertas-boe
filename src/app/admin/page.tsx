@@ -16,7 +16,7 @@ const PLAN_LABEL: Record<string, string> = {
 
 // Ingreso mensualizado estimado por plan (€), para el MRR.
 const PLAN_MRR: Record<string, number> = {
-  MONTHLY: 1, // 1 €/mes
+  MONTHLY: 1.9, // 1,90 €/mes (IVA incl.)
   YEARLY: 9 / 12, // 9 €/año
   FAMILY: 49 / 12, // pack 10 nombres, 49 €/año
   TRIAL: 0,

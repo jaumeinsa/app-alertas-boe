@@ -40,7 +40,7 @@ const PRICING = "#precios";
 /* Enlaces de pago de Stripe (Payment Links). Pegar la URL "https://buy.stripe.com/…"
    de cada plan. Si quedan vacíos, el botón hace fallback a la tabla de precios. */
 const PAYMENT_LINKS = {
-  personal: "https://buy.stripe.com/aFa4gz71Bc3k06ugbe38403", // 1 €/mes · 1 nombre
+  personal: "https://buy.stripe.com/4gM7sLeu35EW2eC5wA38406", // 1,90 €/mes · 1 nombre (IVA incl.)
   anual: "https://buy.stripe.com/14A8wP2Ll9Vc6uS1gk38404", // 9 €/año · 1 nombre
   familiar: "https://buy.stripe.com/8x28wP99JebscTg1gk38405", // 49 €/año · 10 nombres
 };
@@ -280,7 +280,7 @@ function Coverage({ total }: { total: number }) {
     { n: "50", l: "Boletines provinciales" },
     { n: "17", l: "Diarios autonómicos" },
     { n: "24/7", l: "Vigilancia continua" },
-    { n: "1€", l: "Al mes" },
+    { n: "1,90€", l: "Al mes" },
     { n: "<24h", l: "Hasta el aviso" },
   ];
   return (
@@ -325,7 +325,7 @@ function Coverage({ total }: { total: number }) {
 function Pricing() {
   const plans = [
     {
-      name: "Mensual", price: "1€", per: "/mes", note: "1 nombre vigilado", badge: "", link: PAYMENT_LINKS.personal,
+      name: "Mensual", price: "1,90€", per: "/mes", note: "1 nombre vigilado · IVA incluido", badge: "", link: PAYMENT_LINKS.personal,
       bg: "#fff", fg: INK, border: "rgba(34,56,107,.14)", tick: BLUE,
       btnBg: "transparent", btnFg: INK, btnBorder: "rgba(34,56,107,.25)", cta: "Empezar mensual",
       features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email", "Escaneo del histórico completo", "Sin permanencia"],
@@ -430,7 +430,7 @@ function FinalCta() {
           Empieza a dormir tranquilo <span style={{ ...serif, color: BLUE_LT }}>hoy.</span>
         </h2>
         <p style={{ fontSize: 18, color: "rgba(243,239,228,.7)", margin: "22px auto 32px", maxWidth: "46ch", lineHeight: 1.55 }}>
-          Activa la vigilancia y te avisamos en cuanto tu nombre aparezca en cualquier boletín oficial. Desde 1 €/mes, o 9 €/año con el plan anual.
+          Activa la vigilancia y te avisamos en cuanto tu nombre aparezca en cualquier boletín oficial. Desde 1,90 €/mes, o 9 €/año con el plan anual.
         </p>
         <a href={PRICING} style={{ textDecoration: "none", display: "inline-block", background: BLUE, color: "#fff", fontWeight: 700, fontSize: 17, padding: "16px 32px", borderRadius: 100 }}>
           Empezar ahora →

@@ -21,7 +21,7 @@ import {
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://notifikado.com";
 
 const PLAN_LABEL: Record<string, string> = {
-  MONTHLY: "Mensual (1 €/mes · 1 nombre)",
+  MONTHLY: "Mensual (1,90 €/mes · 1 nombre)",
   YEARLY: "Anual (9 €/año · 1 nombre)",
   FAMILY: "Pack 10 (49 €/año · 10 nombres)",
   TRIAL: "Prueba",
