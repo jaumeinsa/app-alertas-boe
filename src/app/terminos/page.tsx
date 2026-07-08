@@ -25,10 +25,14 @@ export default function TerminosPage() {
           Última actualización: 2 de julio de 2026
         </p>
 
-        <h2 style={H}>1. Quién presta el servicio</h2>
+        <h2 style={H}>1. Quién presta el servicio (aviso legal)</h2>
         <p style={P}>
-          Notifikado (notifikado.com) es un servicio prestado por Jaume Insa Pérez, NIF 21693936Z (España).
-          Contacto: <a href="mailto:avisos@notifikado.com" style={{ color: BLUE, fontWeight: 600 }}>avisos@notifikado.com</a>.
+          Notifikado (notifikado.com) es un servicio prestado por <strong>Jaume Insa Pérez</strong>,
+          empresario individual, NIF 21693936Z, con domicilio en Placeta Fonda 4, 46410 Sueca
+          (València), España, dado de alta en el epígrafe IAE 845 («Explotación electrónica por
+          cuenta de terceros»). Contacto:{" "}
+          <a href="mailto:avisos@notifikado.com" style={{ color: BLUE, fontWeight: 600 }}>avisos@notifikado.com</a>.
+          Esta identificación se facilita en cumplimiento del artículo 10 de la Ley 34/2002 (LSSI-CE).
         </p>
 
         <h2 style={H}>2. Qué es Notifikado (y qué no es)</h2>

@@ -28,8 +28,9 @@ export default function PrivacidadPage() {
 
         <h2 style={H}>Responsable del tratamiento</h2>
         <p style={P}>
-          Jaume Insa Pérez, NIF 21693936Z (España), titular de Notifikado (notifikado.com).
-          Contacto para cualquier asunto de privacidad:{" "}
+          Jaume Insa Pérez, NIF 21693936Z, con domicilio en Placeta Fonda 4, 46410 Sueca
+          (València), España, titular de Notifikado (notifikado.com). Contacto para cualquier
+          asunto de privacidad:{" "}
           <a href="mailto:avisos@notifikado.com" style={{ color: BLUE, fontWeight: 600 }}>avisos@notifikado.com</a>.
         </p>
 
