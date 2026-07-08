@@ -11,14 +11,14 @@ const PLAN_LABEL: Record<string, string> = {
   TRIAL: "Prueba",
   MONTHLY: "Personal",
   YEARLY: "Anual",
-  FAMILY: "Familiar",
+  FAMILY: "Pack 10",
 };
 
 // Ingreso mensualizado estimado por plan (€), para el MRR.
 const PLAN_MRR: Record<string, number> = {
-  MONTHLY: 9,
-  YEARLY: 49 / 12,
-  FAMILY: 15,
+  MONTHLY: 1, // 1 €/mes
+  YEARLY: 9 / 12, // 9 €/año
+  FAMILY: 49 / 12, // pack 10 nombres, 49 €/año
   TRIAL: 0,
 };
 

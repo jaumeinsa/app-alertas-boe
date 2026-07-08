@@ -47,7 +47,7 @@ const PLAN_LABEL: Record<string, string> = {
   TRIAL: "Prueba",
   MONTHLY: "Personal",
   YEARLY: "Anual",
-  FAMILY: "Familiar",
+  FAMILY: "Pack 10",
 };
 
 const STATUS_LABEL: Record<string, { text: string; ok: boolean }> = {

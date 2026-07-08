@@ -40,9 +40,9 @@ const PRICING = "#precios";
 /* Enlaces de pago de Stripe (Payment Links). Pegar la URL "https://buy.stripe.com/…"
    de cada plan. Si quedan vacíos, el botón hace fallback a la tabla de precios. */
 const PAYMENT_LINKS = {
-  personal: "https://buy.stripe.com/5kQ5kD85F4AS1ay4sw38400",
-  anual: "https://buy.stripe.com/4gMaEXclVffw1ay8IM38401",
-  familiar: "https://buy.stripe.com/28EfZhfy79Vcg5saQU38402",
+  personal: "https://buy.stripe.com/aFa4gz71Bc3k06ugbe38403", // 1 €/mes · 1 nombre
+  anual: "https://buy.stripe.com/14A8wP2Ll9Vc6uS1gk38404", // 9 €/año · 1 nombre
+  familiar: "https://buy.stripe.com/8x28wP99JebscTg1gk38405", // 49 €/año · 10 nombres
 };
 
 export default function Home() {
@@ -280,7 +280,7 @@ function Coverage({ total }: { total: number }) {
     { n: "50", l: "Boletines provinciales" },
     { n: "17", l: "Diarios autonómicos" },
     { n: "24/7", l: "Vigilancia continua" },
-    { n: "9€", l: "Al mes" },
+    { n: "1€", l: "Al mes" },
     { n: "<24h", l: "Hasta el aviso" },
   ];
   return (
@@ -325,22 +325,22 @@ function Coverage({ total }: { total: number }) {
 function Pricing() {
   const plans = [
     {
-      name: "Personal", price: "9€", per: "/mes", note: "", badge: "", link: PAYMENT_LINKS.personal,
+      name: "Mensual", price: "1€", per: "/mes", note: "1 nombre vigilado", badge: "", link: PAYMENT_LINKS.personal,
       bg: "#fff", fg: INK, border: "rgba(34,56,107,.14)", tick: BLUE,
       btnBg: "transparent", btnFg: INK, btnBorder: "rgba(34,56,107,.25)", cta: "Empezar mensual",
-      features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email", "Escaneo del histórico reciente", "Sin permanencia"],
+      features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email", "Escaneo del histórico completo", "Sin permanencia"],
     },
     {
-      name: "Anual", price: "4,08€", per: "/mes", note: "49 €/año en un pago · ahorras 59 €", badge: "Mejor precio", link: PAYMENT_LINKS.anual,
+      name: "Anual", price: "9€", per: "/año", note: "1 nombre · 0,75 €/mes · ahorras 25 %", badge: "Mejor precio", link: PAYMENT_LINKS.anual,
       bg: INK, fg: CREAM, border: INK, tick: BLUE_LT,
       btnBg: BLUE, btnFg: "#fff", btnBorder: BLUE, cta: "Empezar ahora",
-      features: ["Todo lo del plan Personal", "Avisos por email + WhatsApp", "Pago único al año", "Menos de la mitad que el mensual"],
+      features: ["1 nombre vigilado", "Todas las fuentes oficiales", "Avisos por email + WhatsApp", "Pago único al año", "Sin permanencia"],
     },
     {
-      name: "Familiar", price: "15€", per: "/mes", note: "", badge: "", link: PAYMENT_LINKS.familiar,
+      name: "Pack 10", price: "49€", per: "/año", note: "10 nombres · 4,90 €/año por nombre", badge: "", link: PAYMENT_LINKS.familiar,
       bg: "#fff", fg: INK, border: "rgba(34,56,107,.14)", tick: BLUE,
-      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(34,56,107,.25)", cta: "Proteger a mi familia",
-      features: ["Hasta 5 nombres vigilados", "Ideal para familias y autónomos", "Avisos por email + WhatsApp", "Panel único de control"],
+      btnBg: "transparent", btnFg: INK, btnBorder: "rgba(34,56,107,.25)", cta: "Proteger a 10",
+      features: ["Hasta 10 nombres vigilados", "Ideal para familias, autónomos y despachos", "Avisos por email + WhatsApp", "Panel único de control", "Pago único al año"],
     },
   ];
   return (
@@ -430,7 +430,7 @@ function FinalCta() {
           Empieza a dormir tranquilo <span style={{ ...serif, color: BLUE_LT }}>hoy.</span>
         </h2>
         <p style={{ fontSize: 18, color: "rgba(243,239,228,.7)", margin: "22px auto 32px", maxWidth: "46ch", lineHeight: 1.55 }}>
-          Activa la vigilancia y te avisamos en cuanto tu nombre aparezca en cualquier boletín oficial. Desde 4,08 €/mes con el plan anual.
+          Activa la vigilancia y te avisamos en cuanto tu nombre aparezca en cualquier boletín oficial. Desde 1 €/mes, o 9 €/año con el plan anual.
         </p>
         <a href={PRICING} style={{ textDecoration: "none", display: "inline-block", background: BLUE, color: "#fff", fontWeight: 700, fontSize: 17, padding: "16px 32px", borderRadius: 100 }}>
           Empezar ahora →

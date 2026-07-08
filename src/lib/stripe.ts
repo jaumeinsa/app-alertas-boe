@@ -100,8 +100,12 @@ export function mapPlan(
   unitAmount: number | null | undefined,
   interval: string | null | undefined
 ): { plan: SubscriptionPlan; maxProfiles: number } {
-  if (interval === "year") return { plan: "YEARLY", maxProfiles: 1 };
-  if (unitAmount != null && unitAmount >= 1400) return { plan: "FAMILY", maxProfiles: 5 };
+  if (interval === "year") {
+    // El pack anual de 10 nombres (49 €) se distingue del anual de 1 nombre
+    // (9 €) por importe. Umbral holgado (20 €) para tolerar cambios de precio.
+    if (unitAmount != null && unitAmount >= 2000) return { plan: "FAMILY", maxProfiles: 10 };
+    return { plan: "YEARLY", maxProfiles: 1 };
+  }
   return { plan: "MONTHLY", maxProfiles: 1 };
 }
 
