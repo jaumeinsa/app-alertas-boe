@@ -29,7 +29,6 @@ import {
   SourceAdapter,
 } from "./types";
 import {
-  CONCURRENCY,
   ddmmyyyy,
   fetchText,
   MAX_BODY_CHARS,
@@ -40,6 +39,41 @@ import {
 const BASE = "https://www.bopmalaga.es";
 // La sede exige Referer del propio dominio para servir edicto.php (si no, 404).
 const REFERER = { Referer: `${BASE}/` };
+
+// --- Limitador de ritmo (gate) de toda la sede de Málaga --------------------
+// La sede corta el tráfico por RITMO, no por volumen total: medido, ~40
+// peticiones a ~2,5 req/s (o CONCURRENCY=5) agotan su cubo, dejan de responder
+// y cuelgan las conexiones ~45s; a ~1,4 req/s (700ms entre inicios) aguanta
+// 50+ sin fallo. Serializamos TODAS las peticiones de la sede (índice y cada
+// edicto) a través de este gate de MÓDULO, con un intervalo mínimo entre
+// inicios, para que el ritmo se respete también al encadenar día tras día en
+// el backfill (no solo dentro de un mismo día). Concurrencia efectiva = 1.
+const MIN_GAP_MS = 700;
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+let gateTail: Promise<unknown> = Promise.resolve();
+let lastStart = 0;
+
+/**
+ * Encola `fn` detrás de la última petición y espera a que hayan pasado al menos
+ * MIN_GAP_MS desde el inicio de la anterior antes de lanzarla. Serializa (solo
+ * una petición en vuelo) y limita el ritmo de forma persistente entre llamadas
+ * a fetchByDate, que es lo que evita el throttle al cruzar de un día a otro.
+ */
+function gate<T>(fn: () => Promise<T>): Promise<T> {
+  const result = gateTail.then(async () => {
+    const wait = Math.max(0, lastStart + MIN_GAP_MS - Date.now());
+    if (wait > 0) await sleep(wait);
+    lastStart = Date.now();
+    return fn();
+  });
+  // La cola avanza aunque `fn` rechace, para no bloquear el gate para siempre.
+  gateTail = result.then(
+    () => undefined,
+    () => undefined
+  );
+  return result;
+}
 
 interface MalagaEdicto {
   id: string; // 20260625-02477-2026-01
@@ -108,7 +142,8 @@ export const bopMalagaAdapter: SourceAdapter = {
 
   async fetchByDate(date: Date): Promise<NormalizedPublication[]> {
     const f = ddmmyyyy(date); // DD-MM-YYYY
-    const html = await fetchText(`${BASE}/index.php?fecha=${f}`);
+    // Índice del día a través del gate: cuenta para el ritmo global de la sede.
+    const html = await gate(() => fetchText(`${BASE}/index.php?fecha=${f}`));
     // La sede throttlea peticiones seguidas: cuando lo hace, el índice del día
     // NO llega (fetchText null tras reintentos). Un día SIN boletín sí devuelve
     // HTML (con 0 edictos). Distinguirlos evita el falso "día vacío" que en un
@@ -141,11 +176,15 @@ export const bopMalagaAdapter: SourceAdapter = {
 
     // Texto completo de cada edicto (HTML con capa de texto; Referer obligatorio).
     // Un fallo de red de un anuncio no debe tumbar el día: mantiene el inicial.
-    await mapPool(out, CONCURRENCY, async (pub, i) => {
+    // Concurrencia 1 + gate: cada edicto pasa por el limitador de ritmo de la
+    // sede. NO usamos el CONCURRENCY global de util aquí: martillear el detalle
+    // en paralelo es justo lo que dispara el throttle y cuelga el backfill.
+    await mapPool(out, 1, async (pub, i) => {
       try {
-        const detail = await fetchText(
-          `${BASE}/edicto.php?edicto=${edictos[i].id}`,
-          { headers: REFERER }
+        const detail = await gate(() =>
+          fetchText(`${BASE}/edicto.php?edicto=${edictos[i].id}`, {
+            headers: REFERER,
+          })
         );
         if (detail) {
           const text = stripHtml(detail);
