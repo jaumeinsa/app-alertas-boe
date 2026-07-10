@@ -82,6 +82,7 @@ export default async function AdminPage() {
             <span style={{ background: INK, color: CREAM, fontSize: 11, fontFamily: MONO, padding: "2px 8px", borderRadius: 100 }}>ADMIN</span>
           </Link>
           <div style={{ display: "flex", gap: 16, fontSize: 13.5 }}>
+            <Link href="/admin/cobertura" style={{ color: BLUE, fontWeight: 700, textDecoration: "none" }}>Cobertura</Link>
             <Link href="/dashboard" style={{ color: INK, fontWeight: 600, textDecoration: "none" }}>Mi panel</Link>
             <a href="/api/logout" style={{ color: INK, fontWeight: 600, textDecoration: "none" }}>Salir</a>
           </div>
