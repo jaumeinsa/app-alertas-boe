@@ -14,6 +14,15 @@
 import { prisma } from "@/lib/db";
 import { enabledAdapters, SOURCE_CATALOG } from "@/lib/sources";
 
+// pdf.js (vía pdf-parse) rechaza promesas huérfanas ante PDFs corruptos
+// (p. ej. "FormatError: Illegal character"); sin este manejador, node mata el
+// proceso y el backfill da el año por completo sin estarlo (falso-completo,
+// cazado con BOP_47 2022/2024).
+process.on("unhandledRejection", (reason) => {
+  const msg = reason instanceof Error ? reason.message : String(reason);
+  console.error(`unhandledRejection (ignorada, doc descartado): ${msg}`);
+});
+
 function daysAgo(n: number): Date {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - n);

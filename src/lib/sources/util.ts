@@ -228,7 +228,14 @@ export async function fetchBuffer(
  */
 export async function pdfToText(buf: Buffer): Promise<string> {
   try {
-    const data = await pdfParse(buf);
+    // pdf.js puede colgarse con PDFs corruptos; sin tope, un solo documento
+    // malo congela la ingesta del día entero.
+    const data = await Promise.race([
+      pdfParse(buf),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("pdfParse timeout")), 60_000).unref()
+      ),
+    ]);
     return (data.text ?? "")
       // PostgreSQL (text/tsvector) NO admite el byte NUL ni otros controles C0;
       // algunos PDF los cuelan. Quitarlos (preservando \t y \n).
