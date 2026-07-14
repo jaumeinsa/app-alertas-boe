@@ -1,0 +1,241 @@
+// Notifikado — esquema de base de datos
+// Documentación: https://www.prisma.io/docs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Usuarios y facturación ───────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String? // null si usa magic-link / OAuth
+  emailVerified DateTime?
+  phone         String? // para avisos por WhatsApp/SMS (fase 2)
+
+  // Consentimiento RGPD: el usuario acepta que tratemos sus datos solo para
+  // vigilarlos en boletines y documentos oficiales del Estado.
+  consentAt      DateTime?
+  consentVersion String?
+
+  // Preferencias de aviso (el canal WhatsApp es fase 2; se guarda la intención).
+  notifyEmail    Boolean @default(true)
+  notifyWhatsapp Boolean @default(false)
+
+  stripeCustomerId String? @unique
+
+  // Tokens de login sin contraseña (magic-link).
+  loginTokens LoginToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription Subscription?
+  profiles     MonitoredProfile[]
+
+  @@index([email])
+}
+
+// Token de un solo uso para el login por enlace mágico (magic-link).
+model LoginToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum SubscriptionPlan {
+  TRIAL
+  MONTHLY // 9 €/mes
+  YEARLY
+  FAMILY
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan   SubscriptionPlan   @default(TRIAL)
+  status SubscriptionStatus @default(TRIALING)
+
+  stripeSubscriptionId String? @unique
+  stripePriceId        String?
+  currentPeriodEnd     DateTime?
+
+  // Cuántos perfiles (nombres) permite el plan.
+  maxProfiles Int @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ── Perfiles monitorizados (los nombres que vigilamos) ───────
+
+model MonitoredProfile {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Nombre completo a vigilar (normalizado en `searchKey`).
+  fullName  String
+  searchKey String // versión normalizada: minúsculas, sin acentos, sin orden
+
+  // Filtros para reducir falsos positivos.
+  idType     String? // "DNI" | "NIF" | "CIF"
+  dniSuffix  String? // p.ej. "4567" → casa con BOE anonimizado "***4567**"
+  // DEPRECADO (RGPD minimización): ya no se escribe; los valores se vaciaron en
+  // la migración 0005. Eliminar la columna cuando el worker esté reconstruido.
+  fullDni    String?
+  birthYear  Int?
+  provinces  String[] // ISO/INE de provincias de interés; vacío = todas
+  aliases    String[] // nombres alternativos / antiguos / con segundo apellido
+
+  // ¿Es persona física o jurídica (empresa)? Afecta a BORME, etc.
+  kind ProfileKind @default(PERSON)
+
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  matches Match[]
+
+  @@index([userId])
+  @@index([searchKey])
+}
+
+enum ProfileKind {
+  PERSON
+  COMPANY
+}
+
+// ── Catálogo de fuentes oficiales ────────────────────────────
+
+enum SourceType {
+  BOE // Boletín Oficial del Estado
+  TEU // Tablón Edictal Único (suplemento de notificaciones del BOE)
+  BORME // Registro Mercantil
+  BOP // Boletín Oficial Provincial (50)
+  AUTONOMIC // Diarios autonómicos (BOJA, DOGC, DOG, ...)
+}
+
+model Source {
+  id   String     @id @default(cuid())
+  code String     @unique // "BOE", "TEU", "BORME", "BOP_28", "DOGC", ...
+  name String
+  type SourceType
+
+  region   String? // CCAA o provincia
+  active   Boolean @default(true)
+  // Si false, está catalogada pero su adaptador aún no está implementado.
+  ingestEnabled Boolean @default(false)
+
+  lastIngestAt DateTime?
+
+  publications Publication[]
+
+  @@index([type])
+}
+
+// ── Publicaciones ingeridas ──────────────────────────────────
+
+model Publication {
+  id       String @id @default(cuid())
+  sourceId String
+  source   Source @relation(fields: [sourceId], references: [id])
+
+  // Identificador oficial del documento (p.ej. "BOE-B-2026-12345").
+  externalId  String
+  title       String
+  summary     String? @db.Text
+  // Texto plano usado para el matching (puede ser parcial).
+  searchText  String? @db.Text
+  url         String
+  publishedAt DateTime
+
+  // Tipo de acto si se puede inferir: multa, embargo, citación, edicto judicial...
+  actType String?
+
+  ingestedAt DateTime @default(now())
+
+  // Vector de búsqueda full-text (tsvector). Lo mantiene un trigger en BD a
+  // partir de title + searchText; se consulta con índice GIN. Ver migración
+  // 0002_fulltext_search. Prisma no lo gestiona (tipo no soportado).
+  searchVector Unsupported("tsvector")?
+
+  matches Match[]
+
+  @@unique([sourceId, externalId])
+  @@index([publishedAt])
+}
+
+// ── Coincidencias y notificaciones ───────────────────────────
+
+enum MatchStatus {
+  NEW // detectada, pendiente de notificar
+  NOTIFIED // ya avisado al usuario
+  CONFIRMED // el usuario confirma que es él
+  DISMISSED // falso positivo descartado por el usuario
+}
+
+model Match {
+  id        String           @id @default(cuid())
+  profileId String
+  profile   MonitoredProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+
+  // 0..1 — confianza del matching (nombre + DNI parcial + provincia).
+  score      Float
+  matchedOn  String[] // qué casó: ["name", "dniSuffix", "province"]
+  status     MatchStatus @default(NEW)
+
+  createdAt DateTime @default(now())
+
+  notifications Notification[]
+
+  @@unique([profileId, publicationId])
+  @@index([profileId, status])
+}
+
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  WHATSAPP
+  SMS
+}
+
+model Notification {
+  id      String @id @default(cuid())
+  matchId String
+  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  channel NotificationChannel
+  sentAt  DateTime?
+  error   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([matchId])
+}

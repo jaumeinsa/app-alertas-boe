@@ -1,0 +1,74 @@
+# Notifikado — stack completo para el VPS de Hostinger.
+#   docker compose up -d --build
+#
+# Servicios:
+#   - db:      PostgreSQL persistente
+#   - migrate: aplica migraciones Prisma + seed del catálogo (corre y termina)
+#   - web:     la app Next.js (landing + demo + API + dashboard)
+#   - worker:  contenedor con dependencias completas para los workers (cron del host)
+#
+# Pon un Nginx/Certbot delante para HTTPS en notifikado.com (ver scripts/deploy-vps.sh).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-notifikado}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-notifikado}
+      POSTGRES_DB: ${POSTGRES_DB:-notifikado}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-notifikado}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplica el esquema y carga el catálogo de fuentes. Usa la imagen con
+  # dependencias completas (target builder) porque incluye la CLI de Prisma y tsx.
+  migrate:
+    build:
+      context: .
+      target: builder
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts"
+    restart: "no"
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  # Contenedor persistente con dependencias completas para ejecutar los workers.
+  # El cron del host lanza la ingesta/matching con:
+  #   docker compose exec -T worker sh -c "npx tsx scripts/ingest.ts 0 1 && npx tsx scripts/match.ts 2"
+  worker:
+    build:
+      context: .
+      target: builder
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "tail -f /dev/null"
+
+volumes:
+  pgdata:

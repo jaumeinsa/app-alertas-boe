@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #F3EFE4;
+  color: #22386B;
+  font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+::selection {
+  background: #2C5BD0;
+  color: #fff;
+}
+
+/* Animaciones del diseño */
+@keyframes nk-ping {
+  0% { transform: scale(.6); opacity: .9 }
+  70% { opacity: 0 }
+  100% { transform: scale(2.4); opacity: 0 }
+}
+@keyframes nk-blink {
+  0%, 100% { opacity: 1 }
+  50% { opacity: .25 }
+}
+@keyframes nk-marquee {
+  0% { transform: translateX(0) }
+  100% { transform: translateX(-50%) }
+}
+@keyframes nk-radar {
+  0% { transform: scale(.2); opacity: .55 }
+  100% { transform: scale(1); opacity: 0 }
+}
+@keyframes nk-rise {
+  0% { transform: translateY(8px); opacity: 0 }
+  100% { transform: translateY(0); opacity: 1 }
+}
+@keyframes nk-scan {
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(100%) }
+}
+
+/* Responsive — las clases de layout se colapsan a 1 columna en móvil.
+   El !important vence a los estilos inline (que fijan el grid de escritorio). */
+@media (max-width: 900px) {
+  .nk-grid2 { grid-template-columns: 1fr !important; }
+  .nk-grid3 { grid-template-columns: 1fr !important; }
+  .nk-coverage { grid-template-columns: 1fr !important; }
+  .nk-navlinks { display: none !important; }
+}
+@media (max-width: 560px) {
+  .nk-statgrid { grid-template-columns: 1fr 1fr !important; }
+}
