@@ -25,6 +25,10 @@ Hostinger.
 - `src/lib/matching/` — `normalize.ts` (claves canónicas de nombres) y
   `match.ts` (scoring de coincidencias).
 - `src/lib/demo/search.ts` — lógica de la demo (búsqueda real + ejemplos).
+- `src/app/cimas/` + `src/lib/peaks/` + `src/components/PeakIdentifier.tsx` —
+  experimento independiente del SaaS: identifica cimas en fotos de montaña
+  (EXIF GPS/rumbo, Overpass/OSM, proyección en canvas, IA opcional vía
+  `api/peaks/analyze` con `ANTHROPIC_API_KEY`).
 - `scripts/ingest.ts` / `scripts/match.ts` — workers diarios.
 - `prisma/schema.prisma` — modelo de datos.
 
