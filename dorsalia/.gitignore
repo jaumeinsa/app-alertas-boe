@@ -1,0 +1,7 @@
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Datos del usuario: perfil cifrado, fotos del DNI y resultados de inscripciones.
+# NUNCA deben acabar en el repositorio.
+data/
